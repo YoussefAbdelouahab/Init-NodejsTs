@@ -1,8 +1,8 @@
-import { Controller, Param, Body, Get, Post, Put, Delete } from 'routing-controllers';
+import { JsonController, Param, Body, Get, Post, Put, Delete } from 'routing-controllers';
 import { AppDataSource } from '../db/data-source';
 import { User } from '../entity/User';
 
-@Controller()
+@JsonController()
 export class UserController {
     public userRepository = AppDataSource.manager;
 
@@ -13,12 +13,12 @@ export class UserController {
 
     @Get('/users/:id')
     getOne(@Param('id') id: number) {
-        return 'This action returns user #' + id;
+        return this.userRepository;
     }
 
     @Post('/users')
-    post(@Body() user: any) {
-        return 'Saving user...';
+    post(@Body() user: User) {
+        return this.userRepository.insert(User, user);
     }
 
     @Put('/users/:id')
