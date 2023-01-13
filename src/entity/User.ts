@@ -4,16 +4,16 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 export class User {
 
     @PrimaryGeneratedColumn()
-    private id: number
+    id: number
 
     @Column()
-    private firstName: string
+    firstName: string
 
     @Column()
-    private lastName: string
+    lastName: string
 
     @Column()
-    private age: number
+    age: number
 
     constructor(firstname: string, lastName: string, age: number) {
         this.firstName = firstname;

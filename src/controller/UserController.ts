@@ -4,31 +4,35 @@ import { User } from '../entity/User';
 
 @JsonController()
 export class UserController {
-    public userRepository = AppDataSource.manager;
+    public userRepository = AppDataSource.getRepository(User);
 
     @Get('/users')
     getAll() {
-        return this.userRepository.find(User);
+        return this.userRepository.find();
     }
 
     @Get('/users/:id')
     getOne(@Param('id') id: number) {
-        return this.userRepository;
+        return this.userRepository.findOneBy({ id: id });
     }
 
+
     @Post('/users')
-    post(@Body() user: User) {
-        return this.userRepository.insert(User, user);
+    post(@Body() user: User): void {
+        this.userRepository.insert(user);
+
     }
 
     @Put('/users/:id')
-    put(@Param('id') id: number, @Body() user: User) {
-        return 'Updating a user...';
+    async put(@Param('id') id: number, @Body() u: User) {
+        const user: User = await this.userRepository.findOneBy({ id: id });
+        await this.userRepository.save({ ...user, ...u });
     }
 
     @Delete('/users/:id')
-    remove(@Param('id') id: number) {
-        return 'Removing user...';
+    async remove(@Param('id') id: number) {
+        const user: User = await this.userRepository.findOneBy({ id: id });
+        await this.userRepository.remove(user);
     }
 
 }
