@@ -18,3 +18,10 @@ export const AppDataSource = new DataSource({
     ],
     subscribers: [],
 })
+
+try {
+    const connected = AppDataSource.initialize();
+    if (connected) console.log("Database connected");
+} catch (error) {
+    console.log(error);
+}

@@ -12,7 +12,7 @@ export class UserController {
     @Get('/users')
     async getAll() {
         try {
-            const users = await this.userRepository.find();
+            const users = await this.userRepository.find({ order: { id: "DESC" } });
             if (!users) throw new Error('Users not found');
             return users;
         } catch (err) {

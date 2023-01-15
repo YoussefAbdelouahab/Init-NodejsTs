@@ -5,13 +5,6 @@ import { UserController } from "./controller/UserController";
 
 const PORT: number = 8000;
 
-
-AppDataSource.initialize().then(async () => {
-
-    console.log("Initialisation db")
-
-}).catch(error => console.log(error))
-
 // creates express app, registers all controller routes and returns you express app instance
 const app = createExpressServer({
     routePrefix: '/api', // prefix route api: http://localhost:8000/api/...
