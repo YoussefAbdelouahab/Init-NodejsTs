@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMa
 import { User } from './User';
 import { FavoriteList } from './FavoriteList';
 import { Category } from './Category';
-import { ListFormat } from "typescript";
 
 
 @Entity()
@@ -20,6 +19,16 @@ export class Article {
     @Column()
     private price: number
 
+    @Column()
+    private status: number
+
+    @Column()
+    private created_at: Date
+
+    @Column()
+    private updated_at: Date
+
+     
     @ManyToOne(type => User) // Init many to one relation with User
     @JoinColumn() 
     private user: User; // Join user table with Article table
@@ -63,12 +72,35 @@ export class Article {
     public setPrice(price: number): void {
         this.price = price;
     }
-
+    public getStatus(): number {
+        return this.status;
+    }
+    public setStatus(status: number): void {
+        this.status = status;
+    }
+    public getCreated_at(): Date {
+        return this.created_at;
+    }
+    public getUpdated_at(): Date {
+        return this.updated_at;
+    }
+    //Getters et setters de relations
+    public getUser(): User {
+        return this.user;
+    }
+    public setUser(User: User) {
+        this.user = User;
+    }
     public getFavoriteList(): FavoriteList[] {
         return this.FavoriteList;
     }
     public setFavoriteList(FavoriteList: FavoriteList[]) {
         this.FavoriteList = FavoriteList;
     }
-
+    public getCategory(): Category[] {
+        return this.category;
+    }
+    public setCategory(category: Category[]) {
+        this.category = category;
+    }
 }

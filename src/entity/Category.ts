@@ -28,14 +28,14 @@ export class Category {
     public getTitle(): string {
         return this.title;
     }
-    public setTitle(title: string): string {
-        return this.title = title;
+    public setTitle(title: string): void {
+        this.title = title;
     }
     public getId_parent(): number {
         return this.id_parent;
     }
-    public setId_parent(id_parent: number): number {
-        return this.id_parent = id_parent;
+    public setId_parent(id_parent: number): void {
+        this.id_parent = id_parent;
     }
     public getCreated_at(): Date {
         return this.created_at;

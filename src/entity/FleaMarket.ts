@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm"
+import { Localisation } from './Localisation';
 
 @Entity()
 export class FleaMarket {
@@ -10,19 +11,10 @@ export class FleaMarket {
     private title: string
 
     @Column()
-    private started_at: Date
-
-    @Column()
-    private finished_at: Date
+    private event_date: Date
 
     @Column()
     private address: string
-
-    @Column()
-    private zip_code: number
-
-    @Column()
-    private city: string
 
     @Column()
     private exhibitor_hours: string
@@ -42,22 +34,86 @@ export class FleaMarket {
     @Column()
     private updated_at: Date
 
-    constructor(title: string, started_at: Date, finished_at: Date,
-        address: string, zip_code: number, city: string, exhibitor_hours: string,
-        visitor_hours: string, exhibitor_count: number, type: string,
-        created_at: Date, updated_at: Date) {
+    @Column()
+    private status: number
+
+    @ManyToOne(type => Localisation) // Init many to one relation with User
+    @JoinColumn() 
+    private localisation: Localisation; // Join user table with Article table
+
+    constructor(title: string, event_date: Date, address: string, exhibitor_hours: string,
+        visitor_hours: string, type: string) {
         this.title = title;
-        this.started_at = started_at;
-        this.finished_at = finished_at;
+        this.event_date = event_date;
         this.address = address;
-        this.zip_code = zip_code;
-        this.city = city;
         this.exhibitor_hours = exhibitor_hours;
         this.visitor_hours = visitor_hours;
-        this.exhibitor_count = exhibitor_count;
         this.type = type;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+    }
+
+
+    public getId(): number {
+        return this.id;
+    }
+    public getTitle(): string {
+        return this.title;
+    }
+    public setTitle(title: string): void {
+        this.title = title;
+    }
+    public getEvent_date(): Date {
+        return this.event_date;
+    }
+    public setEvent_date(event_date: Date): void {
+        this.event_date = event_date;
+    }
+    public getAddress(): string {
+        return this.address;
+    }
+    public setAddress(Address: string): void {
+        this.address = Address;
+    }
+    public getExhibitor_hours(): string {
+        return this.exhibitor_hours;
+    }
+    public setExhibitor_hours(exhibitor_hours: string): void {
+        this.exhibitor_hours = exhibitor_hours;
+    }
+    public getVisitor_hours(): string {
+        return this.visitor_hours;
+    }
+    public setVisitor_hours(visitor_hours: string): void {
+        this.visitor_hours = visitor_hours;
+    }
+    public getExhibitor_count(): number {
+        return this.exhibitor_count;
+    }
+    public setExhibitor_count(exhibitor_count: number): void {
+        this.exhibitor_count = exhibitor_count;
+    }
+    public getType(): string {
+        return this.type;
+    }
+    public setType(type: string): void {
+        this.type = type;
+    }
+    public getStatus(): number {
+        return this.status;
+    }
+    public setStatus(status: number): void {
+        this.status = status;
+    }
+    public getCreated_at(): Date {
+        return this.created_at;
+    }
+    public getUpdated_at(): Date {
+        return this.updated_at;
+    }
+    public getLocalisation(): Localisation {
+        return this.localisation;
+    }
+    public setLocalisation(Localisation: Localisation) {
+        this.localisation = Localisation;
     }
 
 }

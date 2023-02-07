@@ -14,4 +14,10 @@ export class FavoriteList {
     public getId(): number {
         return this.id;
     }
+    public getUser(): User {
+        return this.user;
+    }
+    public setUser(user: User) {
+        this.user = user;
+    }
 }

@@ -24,4 +24,26 @@ export class File {
     constructor(url: string, created_at: Date, updated_at: Date) {
         this.url = url;
     }
+
+    public getId(): number {
+        return this.id;
+    }
+    public getUrl(): string {
+        return this.url;
+    }
+    public setUrl(Url: string): void {
+        this.url = Url;
+    }
+    public getCreated_at(): Date {
+        return this.created_at;
+    }
+    public getUpdated_at(): Date {
+        return this.updated_at;
+    }
+    public getArticle(): Article {
+        return this.article;
+    }
+    public setArticle(Article: Article): void {
+        this.article = Article;
+    }
 }

@@ -32,25 +32,25 @@ export class Admin {
     public getFirstname(): string {
         return this.firstName;
     }
-    public setFirstname(firstName: string): string {
-        return this.firstName = firstName;
+    public setFirstname(firstName: string): void {
+        this.firstName = firstName;
     }
     public getLastName(): string {
         return this.lastName;
     }
-    public setLastName(lastName: string): string {
-        return this.lastName = lastName;
+    public setLastName(lastName: string): void {
+        this.lastName = lastName;
     }
     public getUsername(): string {
         return this.username;
     }
-    public setUsername(username: string): string {
-        return this.username = username;
+    public setUsername(username: string): void {
+        this.username = username;
     }
     public getPassword(): string {
         return this.password;
     }
-    public setPassword(password: string): string {
-        return this.password = password;
+    public setPassword(password: string): void {
+        this.password = password;
     }
 }
