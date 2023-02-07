@@ -4,24 +4,43 @@ import { Entity, PrimaryGeneratedColumn, Column} from "typeorm"
 export class Category {
 
     @PrimaryGeneratedColumn()
-    id: number
+    private id: number
 
     @Column()
-    title: string
+    private title: string
 
     @Column()
-    id_parent: number
+    private id_parent: number
 
     @Column()
-    created_at: Date
+    private created_at: Date
 
     @Column()
-    updated_at: Date
+    private updated_at: Date
 
-    constructor(title: string, id_parent: number, created_at: Date, updated_at: Date) {
+    constructor(title: string) {
         this.title = title;
-        this.id_parent = id_parent;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
+    }
+
+    public getId(): number {
+        return this.id;
+    }
+    public getTitle(): string {
+        return this.title;
+    }
+    public setTitle(title: string): string {
+        return this.title = title;
+    }
+    public getId_parent(): number {
+        return this.id_parent;
+    }
+    public setId_parent(id_parent: number): number {
+        return this.id_parent = id_parent;
+    }
+    public getCreated_at(): Date {
+        return this.created_at;
+    }
+    public getUpdated_at(): Date {
+        return this.updated_at;
     }
 }

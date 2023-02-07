@@ -1,49 +1,49 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
 @Entity()
-export class Flea_market {
+export class FleaMarket {
 
     @PrimaryGeneratedColumn()
-    id: number
+    private id: number
 
     @Column()
-    title: string
+    private title: string
 
     @Column()
-    started_at: Date
+    private started_at: Date
 
     @Column()
-    finished_at: Date
+    private finished_at: Date
 
     @Column()
-    address: string
+    private address: string
 
     @Column()
-     zip_code: number
+    private zip_code: number
 
     @Column()
-     city: string
+    private city: string
 
     @Column()
-     exhibitor_hours: string
+    private exhibitor_hours: string
 
     @Column()
-     visitor_hours: string
+    private visitor_hours: string
 
     @Column()
-     exhibitor_count : number
+    private exhibitor_count: number
 
     @Column()
-     type: string
+    private type: string
 
     @Column()
-    created_at: Date
+    private created_at: Date
 
     @Column()
-    updated_at: Date
+    private updated_at: Date
 
     constructor(title: string, started_at: Date, finished_at: Date,
-        address: string, zip_code: number, city: string, exhibitor_hours: string, 
+        address: string, zip_code: number, city: string, exhibitor_hours: string,
         visitor_hours: string, exhibitor_count: number, type: string,
         created_at: Date, updated_at: Date) {
         this.title = title;
@@ -59,4 +59,5 @@ export class Flea_market {
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
+
 }
