@@ -37,9 +37,9 @@ export class FleaMarket {
     @Column()
     private status: number
 
-    @ManyToOne(type => Localisation) // Init many to one relation with User
+    @ManyToOne(type => Localisation) 
     @JoinColumn() 
-    private localisation: Localisation; // Join user table with Article table
+    private localisation: Localisation; 
 
     constructor(title: string, event_date: Date, address: string, exhibitor_hours: string,
         visitor_hours: string, type: string) {

@@ -20,11 +20,11 @@ export class Reservation {
     @Column()
     private status: number
 
-    @OneToOne(() => Article) // Init one to one relation with User
-    @JoinColumn() // Join user table with FavoriteList table
+    @OneToOne(() => Article) // Init one to one relation with Article
+    @JoinColumn() // Join Reservation, table with Article table
     private article: Article
 
-    @ManyToOne(type => User) // Init many to one relation with Article
+    @ManyToOne(type => User) // Init many to one relation with User
     @JoinColumn() 
     private user: User;
 

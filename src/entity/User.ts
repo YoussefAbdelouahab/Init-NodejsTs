@@ -60,9 +60,9 @@ export class User{
     })
     private FleaMarket: FleaMarket[] // Join FleaMarket table with User table
 
-    @ManyToOne(type => Localisation) // Init many to one relation with User
+    @ManyToOne(type => Localisation) // Init many to one relation with Localisation
     @JoinColumn() 
-    private localisation: Localisation; // Join user table with Article table
+    private localisation: Localisation; // Join user table with Localisation table
 
     constructor(lastName: string, username: string, mail: string, password: string) {
         this.lastName = lastName;
