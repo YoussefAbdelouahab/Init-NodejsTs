@@ -1,0 +1,34 @@
+import { JsonController, Body, Post } from 'routing-controllers';
+import { AppDataSource } from '../db/data-source';
+import { Article } from '../entity/Article';
+import { File } from '../entity/File';
+
+@JsonController()
+export class ArticleController {
+
+    constructor(public articleRepository, public fileRepository) {
+        this.articleRepository = AppDataSource.getRepository(Article);
+        this.fileRepository = AppDataSource.getRepository(File);
+    }
+
+    @Post('/article')
+    async post(@Body() data: Article, @Body() data2: File) {
+        try {
+            const article: Article = data;
+            article.setStatus(0);
+            if (!article) throw new Error('Article not created');
+            await this.articleRepository.save(article);
+            if(data2.getUrl()){
+                const file: File = data2;
+                file.setArticle(article)
+                if (!file) throw new Error('file not created');
+                await this.fileRepository.save(file);
+                return { success: "Article created" };
+            }
+            return { success: "Article created" };
+        } catch (err) {
+            return { error: err.message }
+        }
+
+    }
+}

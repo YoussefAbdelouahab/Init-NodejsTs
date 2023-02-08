@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, Index } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, CreateDateColumn,UpdateDateColumn } from "typeorm"
 import { User } from './User';
 import { FavoriteList } from './FavoriteList';
 import { Category } from './Category';
@@ -22,12 +22,11 @@ export class Article {
     @Column()
     private status: number
 
-    @Column()
-    private created_at: Date
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    private created_at: Date;
 
-    @Column()
-    private updated_at: Date
-
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    private updated_at: Date;
      
     @ManyToOne(type => User) // Init many to one relation with User
     @JoinColumn() 
@@ -75,7 +74,7 @@ export class Article {
     public getStatus(): number {
         return this.status;
     }
-    public setStatus(status: number): void {
+    public setStatus(status: number) {
         this.status = status;
     }
     public getCreated_at(): Date {
