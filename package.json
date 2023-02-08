@@ -38,6 +38,7 @@
       "routing-controllers": "^0.10.0",
       "sequelize": "^6.28.0",
       "ts-node": "^10.9.1",
-      "typeorm": "0.3.11"
+      "typeorm": "0.3.11",
+      "uuid": "^9.0.0"
    }
 }
