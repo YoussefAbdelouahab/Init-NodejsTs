@@ -23,10 +23,11 @@ export class Admin {
     @Column()
     private password: string
     
-    constructor(firstname: string, lastName: string, username: string, password: string) {
+    constructor(firstname: string, lastName: string, username: string, mail: string, password: string) {
         this.firstName = firstname;
         this.lastName = lastName;
         this.username = username;
+        this.mail = mail;
         this.password = password;
     }
 

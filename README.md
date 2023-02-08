@@ -1,5 +1,5 @@
 # Broc en ligne
-> Broc en ligne is P2B for individuals who wish to sell in fla market and at home with reservation.
+> Broc en ligne is P2B for individuals who wish to sell in flea market and at home with reservation.
 
 ## Steps to run this project :
 
