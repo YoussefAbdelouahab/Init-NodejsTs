@@ -11,7 +11,7 @@ export class ArticleController {
     }
 
     @Post('/article')
-    async post(@Body() data: Article, @Body() data2: File, @UploadedFile("FileName", { options: multerConfig }) storedFile: any) {
+    async post(@Body() data: Article, @Body() data2: File, @UploadedFile("url", { options: multerConfig }) storedFile: any) {
         try {
             const article: Article = data;
             article.setStatus(0);
@@ -20,7 +20,7 @@ export class ArticleController {
             if(data2.getUrl()){
                 const file: File = data2;
                 file.setArticle(article)
-                file.setUrl(storedFile.filename);
+                file.setUrl(storedFile.url);
                 if (!file) throw new Error('file not created');
                 await this.fileRepository.save(file);
                 return { success: "Article created" };
