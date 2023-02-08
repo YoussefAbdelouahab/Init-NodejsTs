@@ -2,6 +2,8 @@ import { AppDataSource } from "./db/data-source"
 import { createExpressServer } from 'routing-controllers';
 import * as path from 'path';
 import { UserController } from "./controller/UserController";
+import { ArticleController } from "./controller/ArticleController";
+
 
 const PORT: number = 8000;
 
@@ -9,7 +11,7 @@ const PORT: number = 8000;
 const app = createExpressServer({
     routePrefix: '/api', // prefix route api: http://localhost:8000/api/...
     // controllers: [path.join(__dirname + '/controller/*.ts')],
-    controllers: [UserController]
+    controllers: [UserController, ArticleController]
     // we specify controllers we want to use
 });
 

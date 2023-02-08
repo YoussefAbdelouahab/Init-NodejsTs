@@ -16,6 +16,10 @@ export class Admin {
     @Column()
     private username: string
 
+    @Index({ unique: true })
+    @Column()
+    private mail: string
+
     @Column()
     private password: string
     
@@ -46,6 +50,12 @@ export class Admin {
     }
     public setUsername(username: string): void {
         this.username = username;
+    }
+    public getMail(): string {
+        return this.mail;
+    }
+    public setMail(Mail: string): void {
+        this.mail = Mail;
     }
     public getPassword(): string {
         return this.password;
