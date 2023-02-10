@@ -1,18 +1,15 @@
-import {
-    JsonController,
+import {JsonController,
     Param,
     Body,
     Get,
     Post,
     Put,
-    Delete,
-    UseBefore, Session
+    Delete, Session
 } from 'routing-controllers';
 import { AppDataSource } from '../../db/data-source';
 import { Admin } from '../../entity/Admin';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import {AuthMiddelware} from "../../middleware/auth";
 
 @JsonController()
 export class AdminController {
@@ -68,47 +65,54 @@ export class AdminController {
         }
     }
 
-    @Get('/admin/test')
-    @UseBefore(AuthMiddelware)
-    async getConnection() {
+    @Get('/admins')
+    async getAll() {
+        try {
+            const admins = await this.adminRepository.find({ order: { id: "DESC" } });
+            if (!admins) throw new Error('Admins not found');
 
-        return "get connection";
+            return admins;
+        } catch (err) {
+            return { error: err.message }
+        }
     }
 
-    // @Get('/admins/:id')
-    // async getOne(@Param('id') id: number) {
-    //     try {
-    //         const admin = await this.adminRepository.findOne({ where: { id } });
-    //         if (!admin) throw new Error('admin not found');
-    //         return admin;
-    //     } catch (err) {
-    //         return { error: err.message }
-    //     }
-    // }
+    @Get('/admin/:username')
+    async getOne(@Param('username') identifiant: string) {
+        try {
+            const admin = await this.adminRepository.findOne({ where: { username: identifiant }});
+            if (!admin) throw new Error('admin not found');
 
+            return admin;
+        } catch (err) {
+            return { error: err.message }
+        }
+    }
 
-    // @Put('/admins/:id')
-    // async put(@Param('id') id: number, @Body() data: Admin) {
-    //     try {
-    //         const admin: Admin = await this.adminRepository.findOne({ where: { id } });
-    //         if (!admin) throw new Error('admin not found');
-    //         await this.adminRepository.save({ ...admin, ...data });
-    //         return { success: "admin updated" };
-    //     } catch (err) {
-    //         return { error: err.message }
-    //     }
-    // }
+    @Put('/admin/:id/:username')
+    async put(@Param('id') id: string, @Param('username') username: string, @Body() data: Admin) {
+        try {
+            const admin: Admin = await this.adminRepository.findOne({ where: { id, username } });
+            if (!admin) throw new Error('admin not found');
 
-    // @Delete('/admins/:id')
-    // async remove(@Param('id') id: number) {
-    //     try {
-    //         const admin: Admin = await this.adminRepository.findOne({ where: { id } });
-    //         if (!admin) throw new Error('admin not found');
-    //         await this.adminRepository.delete(admin);
-    //         return { success: "admin deleted" };
-    //     } catch (err) {
-    //         return { error: err.message }
-    //     }
-    // }
+            await this.adminRepository.save({ ...admin, ...data });
+            return { success: "admin updated" };
+        } catch (err) {
+            return { error: err.message }
+        }
+    }
+
+    @Delete('/admin/:id/:username')
+    async remove(@Param('id') id: string, @Param('username') username: string) {
+        try {
+            const admin: Admin = await this.adminRepository.findOne({ where: { id, username } });
+            if (!admin) throw new Error('admin not found');
+
+            await this.adminRepository.delete(admin);
+            return { success: "admin deleted" };
+        } catch (err) {
+            return { error: err.message }
+        }
+    }
 
 }
