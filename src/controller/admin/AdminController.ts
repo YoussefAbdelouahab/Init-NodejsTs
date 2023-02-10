@@ -13,7 +13,6 @@ import * as jwt from 'jsonwebtoken';
 
 @JsonController()
 export class AdminController {
-    private token;
     constructor(private adminRepository) {
         this.adminRepository = AppDataSource.getRepository(Admin);
     }
@@ -90,7 +89,7 @@ export class AdminController {
     }
 
     @Put('/admin/:id/:username')
-    async put(@Param('id') id: string, @Param('username') username: string, @Body() data: Admin) {
+    async put(@Param('id') id: number, @Param('username') username: string, @Body() data: Admin) {
         try {
             const admin: Admin = await this.adminRepository.findOne({ where: { id, username } });
             if (!admin) throw new Error('admin not found');
@@ -103,7 +102,7 @@ export class AdminController {
     }
 
     @Delete('/admin/:id/:username')
-    async remove(@Param('id') id: string, @Param('username') username: string) {
+    async remove(@Param('id') id: number, @Param('username') username: string) {
         try {
             const admin: Admin = await this.adminRepository.findOne({ where: { id, username } });
             if (!admin) throw new Error('admin not found');

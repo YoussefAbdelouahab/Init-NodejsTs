@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, Index, ManyToOne, JoinColumn } from "typeorm"
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToMany,
+    JoinTable,
+    Index,
+    ManyToOne,
+    JoinColumn,
+    CreateDateColumn, UpdateDateColumn
+} from "typeorm"
 import { FleaMarket } from './FleaMarket';
 import { Localisation } from './Localisation';
 
@@ -48,10 +58,10 @@ export class User {
     @Column()
     private alert_count: number
 
-    @Column()
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
     @ManyToMany(() => FleaMarket) // Init many to many relation with FleaMarket
