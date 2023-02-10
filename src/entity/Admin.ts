@@ -5,7 +5,7 @@ export class Admin {
 
     @PrimaryGeneratedColumn()
     private id: number
-    
+
     @Column()
     private firstName: string
 
@@ -16,13 +16,20 @@ export class Admin {
     @Column()
     private username: string
 
+    @Index({ unique: true })
+    @Column()
+    private mail: string
+
     @Column()
     private password: string
-    
-    constructor(firstname: string, lastName: string, username: string, password: string) {
+
+    private roles;
+
+    constructor(firstname: string, lastName: string, username: string, mail: string, password: string) {
         this.firstName = firstname;
         this.lastName = lastName;
         this.username = username;
+        this.mail = mail;
         this.password = password;
     }
 
@@ -47,10 +54,21 @@ export class Admin {
     public setUsername(username: string): void {
         this.username = username;
     }
+    public getMail(): string {
+        return this.mail;
+    }
+    public setMail(mail: string): void {
+        this.mail = mail;
+    }
     public getPassword(): string {
         return this.password;
     }
     public setPassword(password: string): void {
         this.password = password;
+    }
+
+    public getRoles(){
+        this.roles = ['USER', 'ADMIN'];
+        return this.roles;
     }
 }

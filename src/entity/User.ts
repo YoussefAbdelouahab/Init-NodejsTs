@@ -3,7 +3,7 @@ import { FleaMarket } from './FleaMarket';
 import { Localisation } from './Localisation';
 
 @Entity()
-export class User{
+export class User {
 
     @PrimaryGeneratedColumn()
     private id: number
@@ -18,7 +18,7 @@ export class User{
     @Index({ unique: true })
     @Column()
     private username: string
-    
+
     @Index({ unique: true })
     @Column()
     private mail: string
@@ -32,7 +32,7 @@ export class User{
 
     @Column()
     private address: string
-    
+
     @Column()
     private zip_code: number
 
@@ -47,7 +47,7 @@ export class User{
 
     @Column()
     private alert_count: number
-    
+
     @Column()
     private created_at: Date
 
@@ -61,8 +61,10 @@ export class User{
     private FleaMarket: FleaMarket[] // Join FleaMarket table with User table
 
     @ManyToOne(type => Localisation) // Init many to one relation with Localisation
-    @JoinColumn() 
+    @JoinColumn()
     private localisation: Localisation; // Join user table with Localisation table
+
+    private roles;
 
     constructor(lastName: string, username: string, mail: string, password: string) {
         this.lastName = lastName;
@@ -164,6 +166,11 @@ export class User{
     public setLocalisation(Localisation: Localisation) {
         this.localisation = Localisation;
     }
-    
+
+    public getRoles(){
+        let roles = this.roles;
+        roles.push('USER');
+        return roles;
+    }
+
 }
- 
