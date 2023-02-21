@@ -17,15 +17,15 @@ export class ArticleController {
             article.setStatus(0);
             if (!article) throw new Error('Article not created');
             await this.articleRepository.save(article);
-            if(data2.getUrl()){
+            if(storedFile){
                 const file: File = data2;
                 file.setArticle(article)
-                file.setUrl(storedFile.url);
+                file.setUrl(storedFile.filename);
                 if (!file) throw new Error('file not created');
                 await this.fileRepository.save(file);
-                return { success: "Article created" };
+                return { success: "Article created with file" };
             }
-            return { success: "Article created" };
+            return { success: "Article created without file" };
         } catch (err) {
             return { error: err.message }
         }
