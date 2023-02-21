@@ -1,4 +1,4 @@
-import { JsonController, Body, Post, UploadedFile} from 'routing-controllers';
+import { JsonController, Body, Post, UploadedFile, Get, Param} from 'routing-controllers';
 import { AppDataSource } from '../db/data-source';
 import { Article } from '../entity/Article';
 import { File } from '../entity/File';
@@ -11,7 +11,7 @@ export class ArticleController {
     }
 
     @Post('/article')
-    async post(@Body() data: Article, @Body() data2: File, @UploadedFile("url", { options: multerConfig }) storedFile: any) {
+    async CreateArticle(@Body() data: Article, @Body() data2: File, @UploadedFile("url", { options: multerConfig }) storedFile: any) {
         try {
             const article: Article = data;
             article.setStatus(0);
@@ -29,6 +29,11 @@ export class ArticleController {
         } catch (err) {
             return { error: err.message }
         }
-
     }
+
+    @Get('/article/:id')
+    getArticle(@Param('id') id: number) {
+        return this.articleRepository.findOneBy(id);
+    }
+
 }
