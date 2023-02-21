@@ -1,17 +1,22 @@
-import {JsonController,
+import {
+    JsonController,
+    Controller,
     Param,
     Body,
     Get,
     Post,
     Put,
-    Delete, Session
+    Delete, Session, UseBefore, Req, Res
 } from 'routing-controllers';
 import { AppDataSource } from '../../db/data-source';
 import { Admin } from '../../entity/Admin';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import {SessionParam} from "routing-controllers/decorator/SessionParam";
+import {AuthMiddelware} from "../../middleware/auth";
+import {Request, Response} from "express";
 
-@JsonController()
+@Controller()
 export class AdminController {
     constructor(private adminRepository) {
         this.adminRepository = AppDataSource.getRepository(Admin);
@@ -39,7 +44,7 @@ export class AdminController {
         }
     }
     @Post("/admin/login")
-    public async login(@Body() data: Admin, @Session() session: any) {
+    public async login(@Session() session: any, @Body() data: Admin, @Res() res: Response) {
         try {
             // find object in data source
             const admin: Admin = await this.adminRepository.findOne({ where: { mail: data.getMail() } });
@@ -50,18 +55,27 @@ export class AdminController {
             if (!isValid) throw new Error('Identifiant/password incorrect');
 
             // stock in session token
-            session = jwt.sign({
-                adminId: admin.getId(),
-                adminRoles: admin.getRoles(),
-            }, "SECRET_TOKEN_KEY", {
-                expiresIn: "24h"
-            });
 
-            return session;
+            // return res.json({
+            //     status: res.statusCode,
+            //     token: jwt.sign({
+            //         adminId: admin.getId(),
+            //         adminRoles: admin.getRoles(),
+            //     }, "SECRET_TOKEN_KEY", {
+            //         expiresIn: "24h"
+            //     })
+            // });
+
+            return res.send("hello");
 
         } catch (error) {
             return { error: error.message };
         }
+    }
+
+    @Get("/test")
+    savePost(@Req() req: any) {
+        return req.headers;
     }
 
     @Get('/admins')
@@ -79,7 +93,7 @@ export class AdminController {
     @Get('/admin/:username')
     async getOne(@Param('username') identifiant: string) {
         try {
-            const admin = await this.adminRepository.findOne({ where: { username: identifiant }});
+            const admin = await this.adminRepository.findOne({ where: { username: identifiant } });
             if (!admin) throw new Error('admin not found');
 
             return admin;
