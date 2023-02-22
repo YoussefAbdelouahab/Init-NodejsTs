@@ -16,8 +16,7 @@ export class File {
     @PrimaryGeneratedColumn()
     private id: number
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
     private url: string
 
     @CreateDateColumn()

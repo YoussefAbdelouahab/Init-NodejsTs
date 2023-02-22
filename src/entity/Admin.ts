@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
+import { IsEmail, Min } from "class-validator"
 
 @Entity()
 export class Admin {
@@ -12,12 +13,11 @@ export class Admin {
     @Column()
     private lastName: string
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
     private username: string
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
+    @IsEmail()
     private mail: string
 
     @Column()
@@ -68,7 +68,7 @@ export class Admin {
     }
 
     public getRoles(){
-        this.roles = ['USER', 'ADMIN'];
+        this.roles = ['ADMIN'];
         return this.roles;
     }
 }

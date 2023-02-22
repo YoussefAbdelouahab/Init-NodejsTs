@@ -1,6 +1,7 @@
-import {Body, Delete, Get, JsonController, Param, Post, Put} from "routing-controllers";
+import {Body, Delete, Get, JsonController, Param, Post, Put, UseBefore} from "routing-controllers";
 import {AppDataSource} from "../../db/data-source";
 import {Category} from "../../entity/Category";
+import {AdminAuthMiddelware} from "../../middleware/adminAuth";
 
 @JsonController()
 export class CategoryController {
@@ -34,10 +35,11 @@ export class CategoryController {
     }
 
     @Post('/admin/category')
+    @UseBefore(AdminAuthMiddelware)
     async post(@Body() data: Category) {
         try {
             const isExit: Category = await this.categoryRepository.findOne({ where: { title: data.getTitle() } });
-            if (isExit) throw new Error('Category existing !');
+            if (isExit) throw new Error('Category existing');
 
             const category: Category = data;
             if (!category) throw new Error('Category not created');
@@ -51,6 +53,7 @@ export class CategoryController {
     }
 
     @Put('/admin/category/:id')
+    @UseBefore(AdminAuthMiddelware)
     async put(@Param('id') id: number, @Body() data: Category) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });
@@ -64,6 +67,7 @@ export class CategoryController {
     }
 
     @Delete('/admin/category/:id')
+    @UseBefore(AdminAuthMiddelware)
     async remove(@Param('id') id: number) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });
