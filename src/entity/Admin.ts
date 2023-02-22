@@ -4,7 +4,7 @@ import { IsEmail, Min } from "class-validator"
 @Entity()
 export class Admin {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     private id: number
 
     @Column()

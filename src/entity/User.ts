@@ -16,7 +16,7 @@ import { IsEmail } from "class-validator"
 @Entity()
 export class User {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     private id: number
 
     @Column({nullable: true})
