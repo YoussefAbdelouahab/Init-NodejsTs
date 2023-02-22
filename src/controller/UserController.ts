@@ -18,7 +18,7 @@ export class UserController {
     public async register(@Body() data: User) {
         try {
             // verif object existing in data source
-            const hasAccount: Admin = await this.userRepository.findOne({where: {mail: data.getMail()}});
+            const hasAccount: User = await this.userRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
             if (hasAccount) throw new Error('Account existing');
 
             // hash password
@@ -60,6 +60,20 @@ export class UserController {
             return {success: "Account login"};
 
         } catch (error) {
+            return {error: error.message};
+        }
+    }
+
+    // DELETE /api/auth/logout
+    @Delete("/logout")
+    public async logout(@Req() req: any){
+        try{
+            if (!req.session.token) throw new Error('Unable to logout');
+
+            req.session.destroy();
+
+            return {success: "Logout with success"};
+        }catch (error) {
             return {error: error.message};
         }
     }

@@ -12,6 +12,7 @@ import {Admin} from '../../entity/Admin';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import {AdminAuthMiddelware} from "../../middleware/adminAuth";
+import {User} from "../../entity/User";
 
 @JsonController()
 export class AdminController {
@@ -23,7 +24,7 @@ export class AdminController {
     public async register(@Body() data: Admin) {
         try {
             // verif object existing in data source
-            const hasAccount: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
+            const hasAccount: Admin = await this.adminRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
             if (hasAccount) throw new Error('Account existing');
 
             // hash password
@@ -65,6 +66,19 @@ export class AdminController {
             return {success: "Account login !"};
 
         } catch (error) {
+            return {error: error.message};
+        }
+    }
+
+    @Delete("/admin/logout")
+    public async logout(@Req() req: any){
+        try{
+            if (!req.session.token) throw new Error('Unable to logout');
+
+            req.session.destroy();
+
+            return {success: "Logout with success"};
+        }catch (error) {
             return {error: error.message};
         }
     }
