@@ -1,4 +1,4 @@
-import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore} from 'routing-controllers';
+import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore } from 'routing-controllers';
 import { AppDataSource } from '../db/data-source';
 import { Article } from '../entity/Article';
 import { File } from '../entity/File';
@@ -15,24 +15,25 @@ export class ArticleController {
 
     @Post('/article')
     @UseBefore(UserAuthMiddelware)
-    async CreateArticle(@Body() data: Article, @Body() data2: File, @UploadedFile("url", { options: multerConfig }) storedFile: any, @Req() req: any) {
+    async CreateArticle(@Body() data: Article, @Body() fileData: File, @UploadedFile("url", { options: multerConfig }) storedFile: any, @Req() req: any) {
         try {
+            /*Initialising objects and variables*/
             const article: Article = data;
-            const id = req.auth;
-            const user: User = await this.userRepository.findOne({ where: {id} });
-            article.setStatus(0);
+            const user: User = await this.userRepository.findOne({ where: {id :req.auth.id} });
+            const file: File = fileData;
+            article.setStatus(0)
             article.setUser(user);
-            if (!article) throw new Error('Article not created');
+            
+            /*Check if file gived */
+            if (!storedFile) throw new Error('File required');
+            if (!file) throw new Error('File not found');
+
+            /*Saving datas*/
             await this.articleRepository.save(article);
-            if(storedFile){
-                const file: File = data2;
-                file.setArticle(article)
-                file.setUrl(storedFile.filename);
-                if (!file) throw new Error('file not created');
-                await this.fileRepository.save(file);
-                return { success: "Article created with file" };
-            }
-            return { success: "Article created without file" };
+            await this.fileRepository.save({...file, article: article, url: storedFile.filename});
+
+            /*Return response*/
+            return { success: "Article created" };
         } catch (err) {
             return { error: err.message }
         }
@@ -40,7 +41,7 @@ export class ArticleController {
 
     @Get('/article/:id')
     getArticle(@Param('id') id: string) {
-        const article: Article = this.articleRepository.find(id).then(function(result){
+        const article: Article = this.articleRepository.findOne(id).then(function (result) {
             console.log(result);
         });
     }
