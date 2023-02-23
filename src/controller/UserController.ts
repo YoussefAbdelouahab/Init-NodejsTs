@@ -18,7 +18,8 @@ export class UserController {
     public async register(@Body() data: User) {
         try {
             // verif object existing in data source
-            const hasAccount: User = await this.userRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
+            //const hasAccount: User = await this.userRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
+            const hasAccount: User = await this.userRepository.findOne({where: {mail: data.getMail()}});
             if (hasAccount) throw new Error('Account existing');
 
             // hash password

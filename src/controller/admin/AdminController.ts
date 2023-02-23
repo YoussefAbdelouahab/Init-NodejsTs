@@ -12,7 +12,6 @@ import {Admin} from '../../entity/Admin';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import {AdminAuthMiddelware} from "../../middleware/adminAuth";
-import {User} from "../../entity/User";
 
 @JsonController()
 export class AdminController {
@@ -24,7 +23,8 @@ export class AdminController {
     public async register(@Body() data: Admin) {
         try {
             // verif object existing in data source
-            const hasAccount: Admin = await this.adminRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
+            //const hasAccount: Admin = await this.adminRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
+            const hasAccount: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
             if (hasAccount) throw new Error('Account existing');
 
             // hash password

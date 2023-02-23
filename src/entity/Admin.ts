@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
-import { IsEmail, Min } from "class-validator"
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { IsEmail } from "class-validator"
 
 @Entity()
 export class Admin {
@@ -22,7 +22,6 @@ export class Admin {
 
     @Column()
     private password: string
-    
 
     private roles;
 
