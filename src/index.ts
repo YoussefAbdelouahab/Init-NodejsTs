@@ -4,7 +4,7 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as path from 'path';
 
-const PORT: number = 9000;
+const PORT: number = 8000;
 
 let app = express();
 
