@@ -26,7 +26,6 @@ export class ArticleController {
             
             /*Check if file gived */
             if (!storedFile) throw new Error('File required');
-            if (!file) throw new Error('File not found');
 
             /*Saving datas*/
             await this.articleRepository.save(article);
