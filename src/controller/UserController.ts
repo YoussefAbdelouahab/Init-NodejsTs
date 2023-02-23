@@ -20,7 +20,7 @@ export class UserController {
             // verif object existing in data source
             //const hasAccount: User = await this.userRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
             const hasAccount: User = await this.userRepository.findOne({where: {mail: data.getMail()}});
-            if (hasAccount) throw new Error('Account existing');
+            if (hasAccount) throw new Error('Account existing. Please Login');
 
             // hash password
             const hash = await bcrypt.hash(data.getPassword(), 10);
