@@ -16,8 +16,10 @@ export class AdminAuthMiddelware implements ExpressMiddlewareInterface {
             const id = decodeToken.id;
             const roles = decodeToken.roles;
 
+            if (!token) throw new Error('Unauthorized');
+
             const admin: Admin =  this.adminRepository.findOne({ where: { id: id } });
-            if (!admin) throw new Error('Admin not found !');
+            if (!admin) throw new Error('Account not found !');
 
             if (roles != "ADMIN") throw new Error('Unauthorized');
 

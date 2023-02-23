@@ -16,8 +16,10 @@ export class UserAuthMiddelware implements ExpressMiddlewareInterface {
             const decodeToken = jwt.decode(token, "SECRET_TOKEN_KEY");
             const id = decodeToken.id;
 
+            if (!token) throw new Error('Unauthorized');
+
             const user: User =  this.userRepository.findOne({ where: { id: id } });
-            if (!user) throw new Error('Admin not found !');
+            if (!user) throw new Error('Account not found !');
 
             req.auth = { id };
             next();
