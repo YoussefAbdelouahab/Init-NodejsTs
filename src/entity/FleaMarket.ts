@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, CreateDateColumn } from "typeorm"
 import { Localisation } from './Localisation';
 
 @Entity()
@@ -28,10 +28,10 @@ export class FleaMarket {
     @Column()
     private type: string
 
-    @Column()
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
     @Column()

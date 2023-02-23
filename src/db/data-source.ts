@@ -17,7 +17,8 @@ export const AppDataSource = new DataSource({
         "src/migration/**/*.ts"
     ],
     subscribers: [],
-})
+});
+
 
 try {
     const connected = AppDataSource.initialize();

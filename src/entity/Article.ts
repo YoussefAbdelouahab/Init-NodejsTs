@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, Index } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, UpdateDateColumn, CreateDateColumn } from "typeorm"
 import { User } from './User';
 import { FavoriteList } from './FavoriteList';
 import { Category } from './Category';
@@ -7,7 +7,7 @@ import { Category } from './Category';
 @Entity()
 export class Article {
     
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     private id: number
     
     @Column()
@@ -22,10 +22,10 @@ export class Article {
     @Column()
     private status: number
 
-    @Column()
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
      

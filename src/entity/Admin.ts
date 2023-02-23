@@ -1,28 +1,30 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { IsEmail } from "class-validator"
 
 @Entity()
 export class Admin {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     private id: number
-    
+
     @Column()
     private firstName: string
 
     @Column()
     private lastName: string
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
     private username: string
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
+    @IsEmail()
     private mail: string
 
     @Column()
     private password: string
-    
+
+    private roles;
+
     constructor(firstname: string, lastName: string, username: string, mail: string, password: string) {
         this.firstName = firstname;
         this.lastName = lastName;
@@ -55,13 +57,18 @@ export class Admin {
     public getMail(): string {
         return this.mail;
     }
-    public setMail(Mail: string): void {
-        this.mail = Mail;
+    public setMail(mail: string): void {
+        this.mail = mail;
     }
     public getPassword(): string {
         return this.password;
     }
     public setPassword(password: string): void {
         this.password = password;
+    }
+
+    public getRoles(){
+        this.roles = ['ADMIN'];
+        return this.roles;
     }
 }

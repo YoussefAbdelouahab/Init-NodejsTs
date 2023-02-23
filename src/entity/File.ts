@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index } from "typeorm"
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    Index,
+    CreateDateColumn,
+    UpdateDateColumn
+} from "typeorm"
 import { Article } from './Article';
 
 @Entity()
@@ -7,14 +16,13 @@ export class File {
     @PrimaryGeneratedColumn()
     private id: number
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
     private url: string
 
-    @Column()
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
     @ManyToOne(type => Article) // Init many to one relation with Article

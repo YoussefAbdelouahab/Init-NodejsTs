@@ -1,57 +1,68 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, Index, ManyToOne, JoinColumn } from "typeorm"
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToMany,
+    JoinTable,
+    Index,
+    ManyToOne,
+    JoinColumn,
+    CreateDateColumn, UpdateDateColumn
+} from "typeorm"
 import { FleaMarket } from './FleaMarket';
 import { Localisation } from './Localisation';
+import { IsEmail } from "class-validator"
 
 @Entity()
-export class User{
+export class User {
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     private id: number
 
-    @Index({ unique: true })
-    @Column()
+    @Column({nullable: true})
     private avatar: string
 
     @Column()
-    private lastName: string
+    private lastname: string
 
-    @Index({ unique: true })
     @Column()
+    private firstname: string
+
+    @Column({ unique: true })
     private username: string
-    
-    @Index({ unique: true })
+
     @Column()
+    private genre: string
+
+    @Column({ unique: true })
+    @IsEmail()
     private mail: string
 
     @Column()
     private password: string
 
-    @Index({ unique: true })
-    @Column()
-    private phone: number
+    @Column({ unique: true })
+    private phone: string
 
     @Column()
     private address: string
-    
+
     @Column()
     private zip_code: number
 
     @Column()
     private city: string
 
-    @Column()
-    private role: string
-
-    @Column()
+    @Column({nullable: true})
     private status: number
 
-    @Column()
+    @Column({nullable: true})
     private alert_count: number
-    
-    @Column()
+
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
     @ManyToMany(() => FleaMarket) // Init many to many relation with FleaMarket
@@ -61,14 +72,22 @@ export class User{
     private FleaMarket: FleaMarket[] // Join FleaMarket table with User table
 
     @ManyToOne(type => Localisation) // Init many to one relation with Localisation
-    @JoinColumn() 
+    @JoinColumn()
     private localisation: Localisation; // Join user table with Localisation table
 
-    constructor(lastName: string, username: string, mail: string, password: string) {
-        this.lastName = lastName;
+    private roles;
+
+    constructor(lastname: string, firstname: string, username: string,genre: string, phone: string, mail: string, password: string, address: string, city: string, zip_code: number) {
+        this.lastname = lastname;
+        this.firstname = firstname;
         this.username = username;
+        this.genre = genre;
+        this.phone = phone;
         this.mail = mail;
         this.password = password;
+        this.address = address;
+        this.city = city;
+        this.zip_code = zip_code;
     }
 
     public getId(): number {
@@ -80,11 +99,18 @@ export class User{
     public setAvatar(avatar: string): void {
         this.avatar = avatar;
     }
-    public getLastName(): string {
-        return this.lastName;
+    public getLastname(): string {
+        return this.lastname;
     }
-    public setLastName(lastName: string): void {
-        this.lastName = lastName;
+    public setLastname(lastname: string): void {
+        this.lastname = lastname;
+    }
+
+    public getFirstname(): string {
+        return this.firstname;
+    }
+    public setFirstname(firstname: string): void {
+        this.firstname = firstname;
     }
     public getUsername(): string {
         return this.username;
@@ -92,6 +118,15 @@ export class User{
     public setUsername(username: string): void {
         this.username = username;
     }
+
+    public getGenre(): string {
+        return this.genre;
+    }
+
+    public setGenre(genre: string) {
+        this.genre = genre;
+    }
+
     public getPassword(): string {
         return this.password;
     }
@@ -104,11 +139,11 @@ export class User{
     public setMail(Mail: string): void {
         this.mail = Mail;
     }
-    public getPhone(): number {
+    public getPhone(): string {
         return this.phone;
     }
-    public setPhone(Phone: number): void {
-        this.phone = Phone;
+    public setPhone(phone: string): void {
+        this.phone = phone;
     }
     public getAddress(): string {
         return this.address;
@@ -128,12 +163,7 @@ export class User{
     public setCity(city: string): void {
         this.city = city;
     }
-    public getRole(): string {
-        return this.role;
-    }
-    public setRole(role: string): void {
-        this.role = role;
-    }
+
     public getStatus(): number {
         return this.status;
     }
@@ -164,6 +194,10 @@ export class User{
     public setLocalisation(Localisation: Localisation) {
         this.localisation = Localisation;
     }
-    
+
+    public getRoles(){
+        this.roles = ['USER'];
+        return this.roles;
+    }
+
 }
- 
