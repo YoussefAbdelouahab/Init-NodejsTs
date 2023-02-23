@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, ManyToOne } from "typeorm"
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    JoinColumn,
+    OneToOne,
+    ManyToOne,
+    CreateDateColumn,
+    UpdateDateColumn
+} from "typeorm"
 import { Article } from './Article';
 import { User } from './User';
 
@@ -11,10 +20,10 @@ export class Reservation {
     @Column()
     private end: Date
 
-    @Column()
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
     @Column()
