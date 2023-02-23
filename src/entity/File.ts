@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Index, CreateDateColumn, UpdateDateColumn } from "typeorm"
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    Index,
+    CreateDateColumn,
+    UpdateDateColumn
+} from "typeorm"
 import { Article } from './Article';
 
 @Entity()
@@ -7,8 +16,7 @@ export class File {
     @PrimaryGeneratedColumn()
     private id: number
 
-    @Index({ unique: true })
-    @Column()
+    @Column({ unique: true })
     private url: string
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column} from "typeorm"
+import {Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn} from "typeorm"
 
 @Entity()
 export class Category {
@@ -9,13 +9,13 @@ export class Category {
     @Column()
     private title: string
 
-    @Column()
+    @Column({default: 0})
     private id_parent: number
 
-    @Column()
+    @CreateDateColumn()
     private created_at: Date
 
-    @Column()
+    @UpdateDateColumn()
     private updated_at: Date
 
     constructor(title: string) {
