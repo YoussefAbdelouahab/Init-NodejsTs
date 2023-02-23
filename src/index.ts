@@ -4,7 +4,7 @@ import * as path from 'path';
 import { UserController } from "./controller/UserController";
 import { ArticleController } from "./controller/ArticleController";
 
-const PORT: number = 8000;
+const PORT: number = 9000;
 
 // creates express app, registers all controller routes and returns you express app instance
 const app = createExpressServer({

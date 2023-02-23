@@ -32,8 +32,9 @@ export class ArticleController {
     }
 
     @Get('/article/:id')
-    getArticle(@Param('id') id: number) {
-        return this.articleRepository.findOneBy(id);
+    getArticle(@Param('id') id: string) {
+        const article: Article = this.articleRepository.find(id).then(function(result){
+            console.log(result);
+        });
     }
-
 }

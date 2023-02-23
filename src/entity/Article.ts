@@ -7,7 +7,7 @@ import { Category } from './Category';
 @Entity()
 export class Article {
     
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     private id: number
     
     @Column()
