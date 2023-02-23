@@ -25,7 +25,7 @@ export class AdminController {
             // verif object existing in data source
             //const hasAccount: Admin = await this.adminRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
             const hasAccount: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
-            if (hasAccount) throw new Error('Account existing');
+            if (hasAccount) throw new Error('Account existing. Please Login');
 
             // hash password
             const hash = await bcrypt.hash(data.getPassword(), 10);
