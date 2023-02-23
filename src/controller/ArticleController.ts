@@ -39,9 +39,13 @@ export class ArticleController {
     }
 
     @Get('/article/:id')
-    getArticle(@Param('id') id: string) {
-        const article: Article = this.articleRepository.findOne(id).then(function (result) {
-            console.log(result);
-        });
+    @UseBefore(UserAuthMiddelware)
+    async getArticle(@Param('id') id: string) {
+        try{
+            const article: Article = await this.articleRepository.findOne({ where: {id: id} })
+            return { article : article }
+        } catch(err){
+            return { error: err.message }
+        }
     }
 }
