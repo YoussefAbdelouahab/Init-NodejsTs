@@ -9,7 +9,7 @@ export class AdminAuthMiddelware implements ExpressMiddlewareInterface {
     constructor(private adminRepository) {
         this.adminRepository = AppDataSource.getRepository(Admin);
     }
-    async use(@Req() req: any, @Res() res: any, next: NextFunction) {
+    public async use(@Req() req: any, @Res() res: any, next: NextFunction) {
         try{
             const token = req.session.token;
             if(!token) return res.sendStatus(401);
@@ -20,10 +20,7 @@ export class AdminAuthMiddelware implements ExpressMiddlewareInterface {
             const id = decodeToken.id;
             const roles = decodeToken.roles;
 
-            const admin: Admin =  this.adminRepository.findOne({ where: { id: id } });
-            if (!admin) throw new Error('Admin not found !');
-
-            if (roles != "ADMIN") throw new Error('Unauthorized');
+            if (roles != "ADMIN") throw new Error('Unauthorized you need role admin');
 
             req.auth = { id };
 

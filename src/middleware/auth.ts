@@ -4,13 +4,14 @@ import {AppDataSource} from "../db/data-source";
 import {User} from "../entity/User";
 import {NextFunction} from "express";
 
-export class UserAuthMiddelware implements ExpressMiddlewareInterface {
+
+export class AuthMiddelware implements ExpressMiddlewareInterface {
 
     constructor(public userRepository) {
         this.userRepository = AppDataSource.getRepository(User);
     }
 
-    use(@Req() req: any, @Res() res: any, next: NextFunction) {
+    public async use(@Req() req: any, @Res() res: any, next: NextFunction) {
         try {
             const token = req.session.token;
             if(!token) return res.sendStatus(401);
@@ -18,9 +19,6 @@ export class UserAuthMiddelware implements ExpressMiddlewareInterface {
             // @ts-ignore
             const decodeToken = jwt.decode(token, "SECRET_TOKEN_KEY");
             const id = decodeToken.id;
-
-            const user: User =  this.userRepository.findOne({ where: { id: id } });
-            if (!user) throw new Error('Admin not found !');
 
             req.auth = { id };
 

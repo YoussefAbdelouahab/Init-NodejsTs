@@ -4,28 +4,34 @@ import {
     Body,
     Get,
     Post,
-    Put,
+    Patch,
     Delete, UseBefore, Req
 } from 'routing-controllers';
 import {AppDataSource} from '../../db/data-source';
 import {Admin} from '../../entity/Admin';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import * as crypto from 'crypto';
 import {AdminAuthMiddelware} from "../../middleware/adminAuth";
+import {User} from "../../entity/User";
+import {NodeMailerSendEmail} from "../../email/NodeMailerSendEmail";
 
-@JsonController()
+@JsonController("/admin")
 export class AdminController {
-    constructor(private adminRepository) {
+    private clientUrl = "http://localhost:8000";
+
+    constructor(private adminRepository, private userRepository) {
         this.adminRepository = AppDataSource.getRepository(Admin);
+        this.userRepository = AppDataSource.getRepository(User);
     }
 
-    @Post("/admin/register")
+    @Post("/register")
     public async register(@Body() data: Admin) {
         try {
             // verif object existing in data source
-            //const hasAccount: Admin = await this.adminRepository.createQueryBuilder().where({ mail: data.getMail() }).andWhere({username: data.getUsername()});
-            const hasAccount: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
-            if (hasAccount) throw new Error('Account existing. Please Login');
+            const hasAccountWithEmail: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
+            const hasAccountWithUsername: Admin = await this.adminRepository.findOne({where: {username: data.getUsername()}});
+            if (hasAccountWithEmail || hasAccountWithUsername) throw new Error('Account existing. Please Login');
 
             // hash password
             const hash = await bcrypt.hash(data.getPassword(), 10);
@@ -43,7 +49,7 @@ export class AdminController {
         }
     }
 
-    @Post("/admin/login")
+    @Post("/login")
     public async login(@Body() data: Admin, @Req() req: any) {
         try {
             // find object in data source
@@ -70,25 +76,73 @@ export class AdminController {
         }
     }
 
-    @Delete("/admin/logout")
-    public async logout(@Req() req: any){
-        try{
+    @Delete("/logout")
+    public async logout(@Req() req: any) {
+        try {
             if (!req.session.token) throw new Error('Unable to logout');
 
             req.session.destroy();
 
             return {success: "Logout with success"};
-        }catch (error) {
+        } catch (error) {
             return {error: error.message};
         }
     }
 
-    @Get('/admins')
+    @Post("/requestResetPassword")
     @UseBefore(AdminAuthMiddelware)
-    async getAll() {
+    public async requestResetPassword(@Body() data: Admin, @Req() req: any) {
+        try {
+            const admin: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
+            if (!admin) throw new Error('Account not found');
+
+            let resetToken = crypto.randomBytes(32).toString("hex");
+            const hash = await bcrypt.hash(resetToken, 10);
+
+            req.session.token = hash;
+
+            // get url for reset password
+            const link = `${this.clientUrl}/passwordReset?token=${resetToken}&id=${admin.getId()}`;
+
+            const sendMail = new NodeMailerSendEmail();
+            await sendMail.sendEmail(admin.getMail(), "Demande de réinitialisation du mot de passe.", admin.getUsername(), link);
+
+            return link;
+
+        } catch (error) {
+            return {error: error.message};
+        }
+    }
+
+    @Patch("/resetPassword")
+    public async resetPassword(@Body() data: any, @Req() req: any) {
+        try {
+            let passwordResetToken = await req.session.token;
+            if (!passwordResetToken) throw new Error('Invalid or expired password reset token');
+
+            const isValid = await bcrypt.compare(data.token, passwordResetToken);
+            if (!isValid) throw new Error('Invalid or expired password reset token');
+
+            const hash = await bcrypt.hash(data.password, 10);
+
+            const admin: Admin = await this.adminRepository.findOne({where: {id: data.id}});
+            if (!admin) throw new Error('Account not found');
+            admin.setPassword(hash);
+
+            await this.adminRepository.save(admin);
+
+            return {success: "Password reset"};
+        } catch (error) {
+            return {error: error.message};
+        }
+    }
+
+    @Get('/list')
+    @UseBefore(AdminAuthMiddelware)
+    public async getAll() {
         try {
             const admins = await this.adminRepository.find({order: {id: "DESC"}});
-            if (!admins) throw new Error('Admins not found');
+            if (!admins) throw new Error('List account not found');
 
             return admins;
         } catch (err) {
@@ -96,12 +150,12 @@ export class AdminController {
         }
     }
 
-    @Get('/admin/:username')
+    @Get('/:username')
     @UseBefore(AdminAuthMiddelware)
-    async getOne(@Param('username') identifiant: string) {
+    public async getOne(@Param('username') identifiant: string) {
         try {
             const admin = await this.adminRepository.findOne({where: {username: identifiant}});
-            if (!admin) throw new Error('admin not found');
+            if (!admin) throw new Error('Account not found');
 
             return admin;
         } catch (err) {
@@ -109,29 +163,39 @@ export class AdminController {
         }
     }
 
-    @Put('/admin/:id/:username')
+    @Patch('/:id/:username')
     @UseBefore(AdminAuthMiddelware)
-    async put(@Param('id') id: number, @Param('username') username: string, @Body() data: Admin) {
+    public async update(@Param('id') id: string, @Param('username') username: string, @Body() data: Admin) {
         try {
             const admin: Admin = await this.adminRepository.findOne({where: {id, username}});
-            if (!admin) throw new Error('admin not found');
+            if (!admin) throw new Error('Account not found');
 
-            await this.adminRepository.save({...admin, ...data});
-            return {success: "admin updated"};
+            if (data.getPassword() != undefined) {
+                // hash password
+                const hash = await bcrypt.hash(data.getPassword(), 10);
+                if (!admin) throw new Error('Account not updated');
+                admin.setPassword(hash);
+
+                await this.adminRepository.save(admin);
+            } else {
+                await this.adminRepository.save({...admin, ...data});
+            }
+
+            return {success: "Account updated"};
         } catch (err) {
             return {error: err.message}
         }
     }
 
-    @Delete('/admin/:id/:username')
+    @Delete('/:id/:username')
     @UseBefore(AdminAuthMiddelware)
-    async remove(@Param('id') id: number, @Param('username') username: string) {
+    public async remove(@Param('id') id: string, @Param('username') username: string) {
         try {
             const admin: Admin = await this.adminRepository.findOne({where: {id, username}});
-            if (!admin) throw new Error('admin not found');
+            if (!admin) throw new Error('Account not found');
 
             await this.adminRepository.delete(admin);
-            return {success: "admin deleted"};
+            return {success: "Account deleted"};
         } catch (err) {
             return {error: err.message}
         }
