@@ -1,4 +1,4 @@
-import {Body, Delete, Get, Controller, Param, Patch, Post, UseBefore} from "routing-controllers";
+import {Body, Delete, Get, Controller, Param, Patch, Post, UseBefore, Req, Res} from "routing-controllers";
 import {AppDataSource} from "../../db/data-source";
 import {Category} from "../../entity/Category";
 import {AdminAuthMiddelware} from "../../middleware/adminAuth";
@@ -34,7 +34,7 @@ export class CategoryController {
         }
     }
 
-    @Post('/admin/category')
+    @Post('/category')
     @UseBefore(AdminAuthMiddelware)
     public async post(@Body() data: Category) {
         try {
@@ -51,9 +51,9 @@ export class CategoryController {
         }
     }
 
-    @Patch('/admin/category/:id')
+    @Patch('/category/:id')
     @UseBefore(AdminAuthMiddelware)
-    public async update(@Param('id') id: number, @Body() data: Category) {
+    public async update(@Param('id') id: number, @Body() data: Category, @Req() req: any, @Res() res: any) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });
             if (!category) return { error: 'Category not found' };
@@ -65,14 +65,15 @@ export class CategoryController {
         }
     }
 
-    @Delete('/admin/category/:id')
+    @Delete('/category/:id')
     @UseBefore(AdminAuthMiddelware)
     public async remove(@Param('id') id: number) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });
+            console.log(category)
             if (!category) return { error: 'Category not found' };
 
-            await this.categoryRepository.delete(category);
+            await this.categoryRepository.remove(category);
             return { success: "Category deleted" };
         } catch (err) {
             return { error: err.message }
