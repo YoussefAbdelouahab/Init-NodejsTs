@@ -64,6 +64,7 @@ export class ArticleController {
     }
 
     @Put('/article/:id')
+    @UseBefore(UserAuthMiddelware)
     async updateArticle(@Body() data: Article, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Param('id') id: string) {
         try{
             const article: Article = await this.articleRepository.findOne({ where: {id: id} })
