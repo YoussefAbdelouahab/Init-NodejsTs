@@ -105,6 +105,7 @@ export class ArticleController {
     }
     
     @Delete('/article/:id')
+    @UseBefore(AuthMiddelware)
     async deleteArticle(@Param('id') id: string) {
         try {
             const article: Article = await this.articleRepository.findOne({ where: {id: id} })
