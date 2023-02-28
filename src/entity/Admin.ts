@@ -1,11 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
 import { IsEmail } from "class-validator"
 
 @Entity()
 export class Admin {
 
     @PrimaryGeneratedColumn("uuid")
-    private id: number
+    private id: string
 
     @Column()
     private firstName: string
@@ -33,7 +33,7 @@ export class Admin {
         this.password = password;
     }
 
-    public getId(): number {
+    public getId(): string {
         return this.id;
     }
     public getFirstname(): string {

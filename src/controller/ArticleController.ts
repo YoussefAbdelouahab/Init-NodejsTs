@@ -5,7 +5,7 @@ import { Article } from '../entity/Article';
 import { File } from '../entity/File';
 import { multerConfig } from '../config/multer';
 import { User } from '../entity/User';
-import { UserAuthMiddelware } from '../middleware/userAuth';
+import { AuthMiddelware } from '../middleware/auth';
 import * as fs from 'fs';
 import * as path from 'path';
 @JsonController()
@@ -17,7 +17,7 @@ export class ArticleController {
     }
 
     @Post('/article')
-    @UseBefore(UserAuthMiddelware)
+    @UseBefore(AuthMiddelware)
     async CreateArticle(@Body() data: Article, @Body() fileData: File, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Req() req: any) {
         try {
             /*Initialising objects and variables*/
@@ -47,7 +47,7 @@ export class ArticleController {
     }
 
     @Get('/article/:id')
-    @UseBefore(UserAuthMiddelware)
+    @UseBefore(AuthMiddelware)
     async getArticle(@Param('id') id: string) {
         try{
             const article: Article = await this.articleRepository.findOne({ where: {id: id} })
@@ -64,7 +64,7 @@ export class ArticleController {
     }
 
     @Put('/article/:id')
-    @UseBefore(UserAuthMiddelware)
+    @UseBefore(AuthMiddelware)
     async updateArticle(@Body() data: Article, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Param('id') id: string) {
         try{
             const article: Article = await this.articleRepository.findOne({ where: {id: id} })
@@ -126,7 +126,7 @@ export class ArticleController {
                     console.log("File deleted successfully.");
                 });
             });
-            await this.articleRepository.delete(article);
+            await this.articleRepository.remove(article);
             return { success: "Article deleted" };
         } catch (err) {
             return { error: err.message }

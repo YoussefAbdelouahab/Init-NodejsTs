@@ -17,7 +17,7 @@ import { IsEmail } from "class-validator"
 export class User {
 
     @PrimaryGeneratedColumn("uuid")
-    private id: number
+    private id: string
 
     @Column({nullable: true})
     private avatar: string
@@ -90,7 +90,7 @@ export class User {
         this.zip_code = zip_code;
     }
 
-    public getId(): number {
+    public getId(): string {
         return this.id;
     }
     public getAvatar(): string {
