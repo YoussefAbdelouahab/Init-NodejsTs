@@ -1,4 +1,4 @@
-import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore, Put, UploadedFiles } from 'routing-controllers';
+import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore, Put, UploadedFiles, Delete } from 'routing-controllers';
 import { DeleteFile } from '../repository/FileRepository'
 import { AppDataSource } from '../db/data-source';
 import { Article } from '../entity/Article';
@@ -74,7 +74,7 @@ export class ArticleController {
                 where: { article: { id: article.getId()} }
             })
             if (!file) throw new Error('File not found');
-
+            
             //Delete files from app and db
             file.forEach(element => {
                 const fichier = path.resolve('src', 'media', element.getUrl());
@@ -89,15 +89,46 @@ export class ArticleController {
 
             //Reupload datas in db
             await this.articleRepository.save({ ...article, ...data });
-            if (storedFile.length > 1) {
-                storedFile.forEach(element => {
-                    this.fileRepository.save({ ...file, article: article, url: element.filename });
-                });
-            } else {
-                this.fileRepository.save({ ...file, article: article, url: storedFile[0].filename });
+            if(storedFile.length > 0){
+                if (storedFile.length > 1) {
+                    storedFile.forEach(element => {
+                        this.fileRepository.save({ ...file, article: article, url: element.filename });
+                    });
+                } else {
+                    this.fileRepository.save({ ...file, article: article, url: storedFile[0].filename });
+                }
             }
             return { success: "article updated" }
         } catch(err){
+            return { error: err.message }
+        }
+    }
+    
+    @Delete('/article/:id')
+    async deleteArticle(@Param('id') id: string) {
+        try {
+            const article: Article = await this.articleRepository.findOne({ where: {id: id} })
+            if (!article) throw new Error('Article not found');
+            const file: File = await this.fileRepository.find({
+                relations: ["article"],
+                where: { article: { id: article.getId()} }
+            })
+            if (!file) throw new Error('File not found');
+
+            //Delete files from app and db
+            file.forEach(element => {
+                const fichier = path.resolve('src', 'media', element.getUrl());
+                DeleteFile(element.getId());
+                fs.unlink(fichier, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log("File deleted successfully.");
+                });
+            });
+            await this.articleRepository.delete(article);
+            return { success: "Article deleted" };
+        } catch (err) {
             return { error: err.message }
         }
     }
