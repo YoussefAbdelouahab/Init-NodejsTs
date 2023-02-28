@@ -74,7 +74,7 @@ export class ArticleController {
             })
             if (!file) throw new Error('File not found');
 
-            //Supprimer tous les fichier de l'article
+            //Delete files from app and db
             file.forEach(element => {
                 const fichier = path.resolve('src', 'media', element.getUrl());
                 DeleteFile(element.getId());
