@@ -6,12 +6,15 @@ import {
     JoinColumn,
     Index,
     CreateDateColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from "typeorm"
 import { Article } from './Article';
 
 @Entity()
 export class File {
+    forEach(arg0: (element: any) => void) {
+        throw new Error('Method not implemented.');
+    }
 
     @PrimaryGeneratedColumn()
     private id: number

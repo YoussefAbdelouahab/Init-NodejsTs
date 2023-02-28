@@ -1,10 +1,13 @@
 import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore, Put, UploadedFiles } from 'routing-controllers';
+import { DeleteFile } from '../repository/FileRepository'
 import { AppDataSource } from '../db/data-source';
 import { Article } from '../entity/Article';
 import { File } from '../entity/File';
 import { multerConfig } from '../config/multer';
 import { User } from '../entity/User';
 import { UserAuthMiddelware } from '../middleware/userAuth';
+import * as fs from 'fs';
+import * as path from 'path';
 @JsonController()
 export class ArticleController {
     constructor(public articleRepository, public fileRepository, public userRepository) {
@@ -26,13 +29,14 @@ export class ArticleController {
             
             /*Check if file gived */
             if (!storedFile) throw new Error('File required');
-
             /*Saving datas*/
             await this.articleRepository.save(article);
             if(storedFile.length > 1){
                 storedFile.forEach(element => {
                     this.fileRepository.save({...file, article: article, url: element.filename});
                 });
+            }else{
+                this.fileRepository.save({...file, article: article, url: storedFile[0].filename});
             }
 
             /*Return response*/
@@ -60,7 +64,7 @@ export class ArticleController {
     }
 
     @Put('/article/:id')
-    async updateArticle(@Body() data: Article, @Param('id') id: string) {
+    async updateArticle(@Body() data: Article, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Param('id') id: string) {
         try{
             const article: Article = await this.articleRepository.findOne({ where: {id: id} })
             if (!article) throw new Error('Article not found');
@@ -69,8 +73,29 @@ export class ArticleController {
                 where: { article: { id: article.getId()} }
             })
             if (!file) throw new Error('File not found');
-            console.log(article, file);
-            return { success : article, file }
+
+            //Supprimer tous les fichier de l'article
+            file.forEach(element => {
+                const fichier = path.resolve('src', 'media', element.getUrl());
+                DeleteFile(element.getId());
+                fs.unlink(fichier, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log("Delete file successfully.");
+                });
+            });
+
+            //Reupload datas in db
+            await this.articleRepository.save({ ...article, ...data });
+            if (storedFile.length > 1) {
+                storedFile.forEach(element => {
+                    this.fileRepository.save({ ...file, article: article, url: element.filename });
+                });
+            } else {
+                this.fileRepository.save({ ...file, article: article, url: storedFile[0].filename });
+            }
+            return { success: "article updated" }
         } catch(err){
             return { error: err.message }
         }

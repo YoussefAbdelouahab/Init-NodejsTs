@@ -1,5 +1,6 @@
 import { useExpressServer } from 'routing-controllers';
 import * as session from 'express-session';
+import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as path from 'path';
@@ -10,7 +11,9 @@ let app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(session({ secret: "secret", saveUninitialized: false, resave: false }));
 
 const controllerPath = path.resolve('src', 'controller', '*.ts');
