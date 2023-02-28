@@ -5,7 +5,7 @@ import {
     Get,
     Post,
     Patch,
-    Delete, UseBefore, Req
+    Delete, UseBefore, Req, Res
 } from 'routing-controllers';
 import {AppDataSource} from '../../db/data-source';
 import {Admin} from '../../entity/Admin';
@@ -16,7 +16,7 @@ import {AdminAuthMiddelware} from "../../middleware/adminAuth";
 import {User} from "../../entity/User";
 import {NodeMailerSendEmail} from "../../email/NodeMailerSendEmail";
 
-@JsonController("/admin")
+@JsonController()
 export class AdminController {
     private clientUrl = "http://localhost:8000";
 
@@ -25,7 +25,7 @@ export class AdminController {
         this.userRepository = AppDataSource.getRepository(User);
     }
 
-    @Post("/register")
+    @Post("/admin/register")
     public async register(@Body() data: Admin) {
         try {
             // verif object existing in data source
@@ -49,7 +49,7 @@ export class AdminController {
         }
     }
 
-    @Post("/login")
+    @Post("/admin/login")
     public async login(@Body() data: Admin, @Req() req: any) {
         try {
             // find object in data source
@@ -63,7 +63,7 @@ export class AdminController {
             req.session.token = jwt.sign({
                 id: admin.getId(),
                 roles: admin.getRoles(),
-            }, "SECRET_TOKEN_KEY", {
+            }, "bc042227-9f88-414d", {
                 expiresIn: "24h"
             });
 
@@ -76,7 +76,7 @@ export class AdminController {
         }
     }
 
-    @Delete("/logout")
+    @Delete("/admin/logout")
     public async logout(@Req() req: any) {
         try {
             if (!req.session.token) throw new Error('Unable to logout');
@@ -89,8 +89,7 @@ export class AdminController {
         }
     }
 
-    @Post("/requestResetPassword")
-    @UseBefore(AdminAuthMiddelware)
+    @Post("/admin/requestResetPassword")
     public async requestResetPassword(@Body() data: Admin, @Req() req: any) {
         try {
             const admin: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
@@ -114,7 +113,7 @@ export class AdminController {
         }
     }
 
-    @Patch("/resetPassword")
+    @Patch("/admin/resetPassword")
     public async resetPassword(@Body() data: any, @Req() req: any) {
         try {
             let passwordResetToken = await req.session.token;
@@ -131,18 +130,20 @@ export class AdminController {
 
             await this.adminRepository.save(admin);
 
-            return {success: "Password reset"};
+            req.session.destroy();
+
+            return {success: "Password reset. Please login !"};
         } catch (error) {
             return {error: error.message};
         }
     }
 
-    @Get('/list')
+    @Get("/admins")
     @UseBefore(AdminAuthMiddelware)
-    public async getAll() {
+    public async getAll(){
         try {
-            const admins = await this.adminRepository.find({order: {id: "DESC"}});
-            if (!admins) throw new Error('List account not found');
+            const admins: Admin = await this.adminRepository.find({order: {id: "DESC"}});
+            if (!admins) throw new Error('Account not found');
 
             return admins;
         } catch (err) {
@@ -150,11 +151,11 @@ export class AdminController {
         }
     }
 
-    @Get('/:username')
+    @Get('/admin/:username')
     @UseBefore(AdminAuthMiddelware)
     public async getOne(@Param('username') identifiant: string) {
         try {
-            const admin = await this.adminRepository.findOne({where: {username: identifiant}});
+            const admin: Admin = await this.adminRepository.findOne({where: {username: identifiant}});
             if (!admin) throw new Error('Account not found');
 
             return admin;
@@ -163,7 +164,7 @@ export class AdminController {
         }
     }
 
-    @Patch('/:id/:username')
+    @Patch('/admin/:id/:username')
     @UseBefore(AdminAuthMiddelware)
     public async update(@Param('id') id: string, @Param('username') username: string, @Body() data: Admin) {
         try {
@@ -187,14 +188,15 @@ export class AdminController {
         }
     }
 
-    @Delete('/:id/:username')
+    @Delete('/admin/:id/:username')
     @UseBefore(AdminAuthMiddelware)
     public async remove(@Param('id') id: string, @Param('username') username: string) {
         try {
             const admin: Admin = await this.adminRepository.findOne({where: {id, username}});
             if (!admin) throw new Error('Account not found');
 
-            await this.adminRepository.delete(admin);
+            await this.adminRepository.remove(admin);
+
             return {success: "Account deleted"};
         } catch (err) {
             return {error: err.message}

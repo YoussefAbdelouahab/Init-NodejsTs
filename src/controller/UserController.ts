@@ -5,7 +5,6 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import {AuthMiddelware} from "../middleware/auth";
 import * as crypto from "crypto";
-import {AdminAuthMiddelware} from "../middleware/adminAuth";
 
 @JsonController()
 export class UserController {
@@ -54,7 +53,7 @@ export class UserController {
             req.session.token = jwt.sign({
                 id: user.getId(),
                 roles: user.getRoles(),
-            }, "SECRET_TOKEN_KEY", {
+            }, "bc042227-9f88-414d", {
                 expiresIn: "24h"
             });
 
@@ -67,7 +66,6 @@ export class UserController {
         }
     }
 
-    // DELETE /api/auth/logout
     @Delete("/logout")
     public async logout(@Req() req: any){
         try{
@@ -84,7 +82,7 @@ export class UserController {
     @Get('/user/:id')
     public async getOne(@Param('id') id: number) {
         try {
-            const user = await this.userRepository.findOne({ where: { id } });
+            const user: User = await this.userRepository.findOne({ where: { id } });
             if (!user) throw new Error('Account not found');
             return user;
         } catch (err) {
@@ -93,10 +91,9 @@ export class UserController {
     }
 
     @Get('/users')
-    @UseBefore(AuthMiddelware)
     public async getAllUsers() {
         try {
-            const users = await this.userRepository.find({order: {id: "DESC"}});
+            const users: User = await this.userRepository.find({order: {id: "DESC"}});
             if (!users) throw new Error('Users not found');
             return users;
         } catch (err) {
@@ -134,7 +131,7 @@ export class UserController {
         try {
             const user: User = await this.userRepository.findOne({ where: {id, username} });
             if (!user) throw new Error('Account not found');
-            await this.userRepository.delete(user);
+            await this.userRepository.remove(user);
             return { success: "Account deleted" };
         } catch (err) {
             return { error: err.message }
@@ -142,7 +139,6 @@ export class UserController {
     }
 
     @Post("/requestResetPassword")
-    @UseBefore(AuthMiddelware)
     public async requestResetPassword(@Body() data: User, @Req() req: any) {
         try {
             const user: User = await this.userRepository.findOne({where: {mail: data.getMail()}});
@@ -163,7 +159,6 @@ export class UserController {
     }
 
     @Patch("/resetPassword")
-    @UseBefore(AuthMiddelware)
     public async resetPassword(@Body() data: any, @Req() req: any) {
         try {
             let passwordResetToken = await req.session.token;

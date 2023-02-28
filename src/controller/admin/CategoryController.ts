@@ -1,9 +1,9 @@
-import {Body, Delete, Get, Controller, Param, Patch, Post, UseBefore, Req, Res} from "routing-controllers";
+import {Body, Delete, Get, JsonController, Param, Patch, Post, UseBefore, Req, Res} from "routing-controllers";
 import {AppDataSource} from "../../db/data-source";
 import {Category} from "../../entity/Category";
 import {AdminAuthMiddelware} from "../../middleware/adminAuth";
 
-@Controller()
+@JsonController()
 export class CategoryController {
 
     constructor(private categoryRepository) {
@@ -59,6 +59,7 @@ export class CategoryController {
             if (!category) return { error: 'Category not found' };
 
             await this.categoryRepository.save({...category, ...data});
+
             return { success: "Category updated" };
         } catch (err) {
             return { error: err.message }
@@ -70,10 +71,10 @@ export class CategoryController {
     public async remove(@Param('id') id: number) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });
-            console.log(category)
             if (!category) return { error: 'Category not found' };
 
             await this.categoryRepository.remove(category);
+
             return { success: "Category deleted" };
         } catch (err) {
             return { error: err.message }
