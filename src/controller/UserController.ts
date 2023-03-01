@@ -1,9 +1,8 @@
-import {JsonController, Param, Body, Get, Post, Put, Delete, Req, UseBefore, Patch} from 'routing-controllers';
+import { JsonController, Param, Body, Get, Post, Put, Delete, Req, UseBefore, Patch } from 'routing-controllers';
 import { AppDataSource } from '../db/data-source';
 import { User } from '../entity/User';
 import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
-import {AuthMiddelware} from "../middleware/auth";
 import * as crypto from "crypto";
 
 @JsonController()
@@ -19,8 +18,8 @@ export class UserController {
     public async register(@Body() data: User) {
         try {
             // verif object existing in data source
-            const hasAccountWithEmail: User = await this.userRepository.findOne({where: {mail: data.getMail()}});
-            const hasAccountWithUsername: User = await this.userRepository.findOne({where: {username: data.getUsername()}});
+            const hasAccountWithEmail: User = await this.userRepository.findOne({ where: { mail: data.getMail() } });
+            const hasAccountWithUsername: User = await this.userRepository.findOne({ where: { username: data.getUsername() } });
             if (hasAccountWithEmail || hasAccountWithUsername) throw new Error('Account existing. Please Login');
 
             // hash password
@@ -33,9 +32,9 @@ export class UserController {
 
             await this.userRepository.save(user);
 
-            return {success: "Account created"};
+            return { success: "Account created" };
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
@@ -43,7 +42,7 @@ export class UserController {
     public async login(@Body() data: User, @Req() req: any) {
         try {
             // find object in data source
-            const user: User = await this.userRepository.findOne({where: {mail: data.getMail()}});
+            const user: User = await this.userRepository.findOne({ where: { mail: data.getMail() } });
             if (!user) throw new Error('Account not found');
 
             // check if password conform
@@ -59,23 +58,23 @@ export class UserController {
 
             if (!req.session.token) throw new Error('Error authentication');
 
-            return {success: "Account login"};
+            return { success: "Account login" };
 
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
     @Delete("/logout")
-    public async logout(@Req() req: any){
-        try{
+    public async logout(@Req() req: any) {
+        try {
             if (!req.session.token) throw new Error('Unable to logout');
 
             req.session.destroy();
 
-            return {success: "Logout with success"};
-        }catch (error) {
-            return {error: error.message};
+            return { success: "Logout with success" };
+        } catch (error) {
+            return { error: error.message };
         }
     }
 
@@ -93,19 +92,18 @@ export class UserController {
     @Get('/users')
     public async getAllUsers() {
         try {
-            const users: User = await this.userRepository.find({order: {id: "DESC"}});
+            const users: User = await this.userRepository.find({ order: { id: "DESC" } });
             if (!users) throw new Error('Users not found');
             return users;
         } catch (err) {
-            return {error: err.message}
+            return { error: err.message }
         }
     }
 
     @Patch('/user/:id/:username')
-    @UseBefore(AuthMiddelware)
     public async update(@Param('id') id: string, @Param('username') username: string, @Body() data: User) {
         try {
-            const user: User = await this.userRepository.findOne({ where: {id, username} });
+            const user: User = await this.userRepository.findOne({ where: { id, username } });
             if (!user) throw new Error('Account not found');
 
             if (data.getPassword() != undefined) {
@@ -115,8 +113,8 @@ export class UserController {
                 user.setPassword(hash);
 
                 await this.userRepository.save(user);
-            }else{
-                await this.userRepository.save({...user, ...data});
+            } else {
+                await this.userRepository.save({ ...user, ...data });
             }
 
             return { success: "Account updated" };
@@ -126,10 +124,9 @@ export class UserController {
     }
 
     @Delete('/user/:id/:username')
-    @UseBefore(AuthMiddelware)
     public async remove(@Param('id') id: string, @Param('username') username: string) {
         try {
-            const user: User = await this.userRepository.findOne({ where: {id, username} });
+            const user: User = await this.userRepository.findOne({ where: { id, username } });
             if (!user) throw new Error('Account not found');
             await this.userRepository.remove(user);
             return { success: "Account deleted" };
@@ -141,7 +138,7 @@ export class UserController {
     @Post("/requestResetPassword")
     public async requestResetPassword(@Body() data: User, @Req() req: any) {
         try {
-            const user: User = await this.userRepository.findOne({where: {mail: data.getMail()}});
+            const user: User = await this.userRepository.findOne({ where: { mail: data.getMail() } });
             if (!user) throw new Error('Account not found');
 
             let resetToken = crypto.randomBytes(32).toString("hex");
@@ -154,7 +151,7 @@ export class UserController {
             return link;
 
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
@@ -169,15 +166,15 @@ export class UserController {
 
             const hash = await bcrypt.hash(data.password, 10);
 
-            const user: User = await this.userRepository.findOne({where: {id: data.id}});
+            const user: User = await this.userRepository.findOne({ where: { id: data.id } });
             if (!user) throw new Error('Account not found');
             user.setPassword(hash);
 
             await this.userRepository.save(user);
 
-            return {success: "Password reset"};
+            return { success: "Password reset" };
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 }

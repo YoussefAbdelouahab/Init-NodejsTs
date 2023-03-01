@@ -6,12 +6,15 @@ import {
     JoinColumn,
     Index,
     CreateDateColumn,
-    UpdateDateColumn
+    UpdateDateColumn,
 } from "typeorm"
 import { Article } from './Article';
 
 @Entity()
 export class File {
+    forEach(arg0: (element: any) => void) {
+        throw new Error('Method not implemented.');
+    }
 
     @PrimaryGeneratedColumn()
     private id: number
@@ -19,14 +22,14 @@ export class File {
     @Column({ unique: true })
     private url: string
 
-    @CreateDateColumn()
-    private created_at: Date
+    @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
+    private created_at: Date;
 
-    @UpdateDateColumn()
-    private updated_at: Date
+    @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    private updated_at: Date;
 
     @ManyToOne(type => Article) // Init many to one relation with Article
-    @JoinColumn() 
+    @JoinColumn()
     private article: Article; // Join article table with File table
 
     constructor(url: string, created_at: Date, updated_at: Date) {
