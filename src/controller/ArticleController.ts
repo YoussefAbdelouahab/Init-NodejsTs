@@ -1,5 +1,5 @@
 import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore, Put, UploadedFiles, Delete } from 'routing-controllers';
-import { DeleteFile } from '../repository/FileRepository'
+import { deleteFile, getUserArticle } from '../repository/FileRepository'
 import { AppDataSource } from '../db/data-source';
 import { Article } from '../entity/Article';
 import { File } from '../entity/File';
@@ -9,6 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 @JsonController()
 export class ArticleController {
+
     constructor(public articleRepository, public fileRepository, public userRepository) {
         this.articleRepository = AppDataSource.getRepository(Article);
         this.fileRepository = AppDataSource.getRepository(File);
@@ -21,6 +22,7 @@ export class ArticleController {
             /*Initialising objects and variables*/
             const article: Article = data;
             const user: User = await this.userRepository.findOne({ where: { id: req.body.userId } });
+            if (user == null) throw new Error('User required');
             const file: File = fileData;
             article.setStatus(0)
             article.setUser(user);
@@ -60,6 +62,18 @@ export class ArticleController {
         }
     }
 
+    @Get('/article/user/:id')
+    async getUserArticle(@Param('id') id: string) {
+        try {
+            const user: User = await this.userRepository.findOne({ where: { id: id } });
+            if (user == null) throw new Error('User required');
+            getUserArticle(user.getId());
+            return { success : "ok"}
+        } catch (err) {
+            return { error: err.message }
+        }
+    }
+
     @Put('/article/:id')
     async updateArticle(@Body() data: Article, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Param('id') id: string) {
         try {
@@ -74,7 +88,7 @@ export class ArticleController {
             //Delete files from app and db
             file.forEach(element => {
                 const fichier = path.resolve('src', 'media', element.getUrl());
-                DeleteFile(element.getId());
+                deleteFile(element.getId());
                 fs.unlink(fichier, (err) => {
                     if (err) {
                         throw err;
@@ -114,7 +128,7 @@ export class ArticleController {
             //Delete files from app and db
             file.forEach(element => {
                 const fichier = path.resolve('src', 'media', element.getUrl());
-                DeleteFile(element.getId());
+                deleteFile(element.getId());
                 fs.unlink(fichier, (err) => {
                     if (err) {
                         throw err;

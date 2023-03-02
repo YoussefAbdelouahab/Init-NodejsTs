@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, UpdateDateColumn, CreateDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, UpdateDateColumn, CreateDateColumn, ArrayContainedBy } from "typeorm"
 import { User } from './User';
 import { FavoriteList } from './FavoriteList';
 import { Category } from './Category';
@@ -6,6 +6,9 @@ import { Category } from './Category';
 
 @Entity()
 export class Article {
+    forEach(arg0: (element: any) => void) {
+        throw new Error('Method not implemented.');
+    }
     
     @PrimaryGeneratedColumn("uuid")
     private id: number
