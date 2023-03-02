@@ -1,7 +1,6 @@
 import {Body, Delete, Get, JsonController, Param, Patch, Post, UseBefore, Req, Res} from "routing-controllers";
 import {AppDataSource} from "../../db/data-source";
 import {Category} from "../../entity/Category";
-import {AdminAuthMiddelware} from "../../middleware/adminAuth";
 
 @JsonController()
 export class CategoryController {
@@ -35,7 +34,6 @@ export class CategoryController {
     }
 
     @Post('/category')
-    @UseBefore(AdminAuthMiddelware)
     public async post(@Body() data: Category) {
         try {
             const isExit: Category = await this.categoryRepository.findOne({ where: { title: data.getTitle() } });
@@ -52,7 +50,6 @@ export class CategoryController {
     }
 
     @Patch('/category/:id')
-    @UseBefore(AdminAuthMiddelware)
     public async update(@Param('id') id: number, @Body() data: Category, @Req() req: any, @Res() res: any) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });
@@ -67,7 +64,6 @@ export class CategoryController {
     }
 
     @Delete('/category/:id')
-    @UseBefore(AdminAuthMiddelware)
     public async remove(@Param('id') id: number) {
         try {
             const category: Category = await this.categoryRepository.findOne({ where: { id } });

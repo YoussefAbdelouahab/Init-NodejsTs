@@ -7,14 +7,13 @@ import {
     Patch,
     Delete, UseBefore, Req, Res
 } from 'routing-controllers';
-import {AppDataSource} from '../../db/data-source';
-import {Admin} from '../../entity/Admin';
+import { AppDataSource } from '../../db/data-source';
+import { Admin } from '../../entity/Admin';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
-import {AdminAuthMiddelware} from "../../middleware/adminAuth";
-import {User} from "../../entity/User";
-import {NodeMailerSendEmail} from "../../email/NodeMailerSendEmail";
+import { User } from "../../entity/User";
+import { NodeMailerSendEmail } from "../../email/NodeMailerSendEmail";
 
 @JsonController()
 export class AdminController {
@@ -29,8 +28,8 @@ export class AdminController {
     public async register(@Body() data: Admin) {
         try {
             // verif object existing in data source
-            const hasAccountWithEmail: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
-            const hasAccountWithUsername: Admin = await this.adminRepository.findOne({where: {username: data.getUsername()}});
+            const hasAccountWithEmail: Admin = await this.adminRepository.findOne({ where: { mail: data.getMail() } });
+            const hasAccountWithUsername: Admin = await this.adminRepository.findOne({ where: { username: data.getUsername() } });
             if (hasAccountWithEmail || hasAccountWithUsername) throw new Error('Account existing. Please Login');
 
             // hash password
@@ -43,9 +42,9 @@ export class AdminController {
 
             await this.adminRepository.save(admin);
 
-            return {success: "Account created"};
+            return { success: "Account created" };
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
@@ -53,7 +52,7 @@ export class AdminController {
     public async login(@Body() data: Admin, @Req() req: any) {
         try {
             // find object in data source
-            const admin: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
+            const admin: Admin = await this.adminRepository.findOne({ where: { mail: data.getMail() } });
             if (!admin) throw new Error('Account not found');
 
             // check if password conform
@@ -69,10 +68,10 @@ export class AdminController {
 
             if (!req.session.token) throw new Error('Error authentication');
 
-            return {success: "Account login !"};
+            return { success: "Account login !" };
 
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
@@ -83,16 +82,16 @@ export class AdminController {
 
             req.session.destroy();
 
-            return {success: "Logout with success"};
+            return { success: "Logout with success" };
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
     @Post("/admin/requestResetPassword")
     public async requestResetPassword(@Body() data: Admin, @Req() req: any) {
         try {
-            const admin: Admin = await this.adminRepository.findOne({where: {mail: data.getMail()}});
+            const admin: Admin = await this.adminRepository.findOne({ where: { mail: data.getMail() } });
             if (!admin) throw new Error('Account not found');
 
             let resetToken = crypto.randomBytes(32).toString("hex");
@@ -109,7 +108,7 @@ export class AdminController {
             return link;
 
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
@@ -124,7 +123,7 @@ export class AdminController {
 
             const hash = await bcrypt.hash(data.password, 10);
 
-            const admin: Admin = await this.adminRepository.findOne({where: {id: data.id}});
+            const admin: Admin = await this.adminRepository.findOne({ where: { id: data.id } });
             if (!admin) throw new Error('Account not found');
             admin.setPassword(hash);
 
@@ -132,43 +131,40 @@ export class AdminController {
 
             req.session.destroy();
 
-            return {success: "Password reset. Please login !"};
+            return { success: "Password reset. Please login !" };
         } catch (error) {
-            return {error: error.message};
+            return { error: error.message };
         }
     }
 
     @Get("/admins")
-    @UseBefore(AdminAuthMiddelware)
-    public async getAll(){
+    public async getAll() {
         try {
-            const admins: Admin = await this.adminRepository.find({order: {id: "DESC"}});
+            const admins: Admin = await this.adminRepository.find({ order: { id: "DESC" } });
             if (!admins) throw new Error('Account not found');
 
             return admins;
         } catch (err) {
-            return {error: err.message}
+            return { error: err.message }
         }
     }
 
     @Get('/admin/:username')
-    @UseBefore(AdminAuthMiddelware)
     public async getOne(@Param('username') identifiant: string) {
         try {
-            const admin: Admin = await this.adminRepository.findOne({where: {username: identifiant}});
+            const admin: Admin = await this.adminRepository.findOne({ where: { username: identifiant } });
             if (!admin) throw new Error('Account not found');
 
             return admin;
         } catch (err) {
-            return {error: err.message}
+            return { error: err.message }
         }
     }
 
     @Patch('/admin/:id/:username')
-    @UseBefore(AdminAuthMiddelware)
     public async update(@Param('id') id: string, @Param('username') username: string, @Body() data: Admin) {
         try {
-            const admin: Admin = await this.adminRepository.findOne({where: {id, username}});
+            const admin: Admin = await this.adminRepository.findOne({ where: { id, username } });
             if (!admin) throw new Error('Account not found');
 
             if (data.getPassword() != undefined) {
@@ -179,27 +175,26 @@ export class AdminController {
 
                 await this.adminRepository.save(admin);
             } else {
-                await this.adminRepository.save({...admin, ...data});
+                await this.adminRepository.save({ ...admin, ...data });
             }
 
-            return {success: "Account updated"};
+            return { success: "Account updated" };
         } catch (err) {
-            return {error: err.message}
+            return { error: err.message }
         }
     }
 
     @Delete('/admin/:id/:username')
-    @UseBefore(AdminAuthMiddelware)
     public async remove(@Param('id') id: string, @Param('username') username: string) {
         try {
-            const admin: Admin = await this.adminRepository.findOne({where: {id, username}});
+            const admin: Admin = await this.adminRepository.findOne({ where: { id, username } });
             if (!admin) throw new Error('Account not found');
 
             await this.adminRepository.remove(admin);
 
-            return {success: "Account deleted"};
+            return { success: "Account deleted" };
         } catch (err) {
-            return {error: err.message}
+            return { error: err.message }
         }
     }
 

@@ -5,7 +5,6 @@ import { Article } from '../entity/Article';
 import { File } from '../entity/File';
 import { multerConfig } from '../config/multer';
 import { User } from '../entity/User';
-import { AuthMiddelware } from '../middleware/auth';
 import * as fs from 'fs';
 import * as path from 'path';
 @JsonController()
@@ -17,26 +16,25 @@ export class ArticleController {
     }
 
     @Post('/article')
-    @UseBefore(AuthMiddelware)
     async CreateArticle(@Body() data: Article, @Body() fileData: File, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Req() req: any) {
         try {
             /*Initialising objects and variables*/
             const article: Article = data;
-            const user: User = await this.userRepository.findOne({ where: {id :req.auth.id} });
+            const user: User = await this.userRepository.findOne({ where: { id: req.body.userId } });
             const file: File = fileData;
             article.setStatus(0)
             article.setUser(user);
-            
+
             /*Check if file gived */
-            if (!storedFile) throw new Error('File required');
+            if (storedFile.length == 0) throw new Error('File required');
             /*Saving datas*/
             await this.articleRepository.save(article);
-            if(storedFile.length > 1){
+            if (storedFile.length > 1) {
                 storedFile.forEach(element => {
-                    this.fileRepository.save({...file, article: article, url: element.filename});
+                    this.fileRepository.save({ ...file, article: article, url: element.filename });
                 });
-            }else{
-                this.fileRepository.save({...file, article: article, url: storedFile[0].filename});
+            } else {
+                this.fileRepository.save({ ...file, article: article, url: storedFile[0].filename });
             }
 
             /*Return response*/
@@ -47,34 +45,32 @@ export class ArticleController {
     }
 
     @Get('/article/:id')
-    @UseBefore(AuthMiddelware)
     async getArticle(@Param('id') id: string) {
-        try{
-            const article: Article = await this.articleRepository.findOne({ where: {id: id} })
+        try {
+            const article: Article = await this.articleRepository.findOne({ where: { id: id } })
             if (!article) throw new Error('Article not found');
             const file: File = await this.fileRepository.find({
                 relations: ["article"],
-                where: { article: { id: article.getId()} }
+                where: { article: { id: article.getId() } }
             })
             if (!file) throw new Error('File not found');
-            return { article : article, file }
-        } catch(err){
+            return { article: article, file }
+        } catch (err) {
             return { error: err.message }
         }
     }
 
     @Put('/article/:id')
-    @UseBefore(AuthMiddelware)
     async updateArticle(@Body() data: Article, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Param('id') id: string) {
-        try{
-            const article: Article = await this.articleRepository.findOne({ where: {id: id} })
+        try {
+            const article: Article = await this.articleRepository.findOne({ where: { id: id } })
             if (!article) throw new Error('Article not found');
             const file: File = await this.fileRepository.find({
                 relations: ["article"],
-                where: { article: { id: article.getId()} }
+                where: { article: { id: article.getId() } }
             })
             if (!file) throw new Error('File not found');
-            
+
             //Delete files from app and db
             file.forEach(element => {
                 const fichier = path.resolve('src', 'media', element.getUrl());
@@ -89,7 +85,7 @@ export class ArticleController {
 
             //Reupload datas in db
             await this.articleRepository.save({ ...article, ...data });
-            if(storedFile.length > 0){
+            if (storedFile.length > 0) {
                 if (storedFile.length > 1) {
                     storedFile.forEach(element => {
                         this.fileRepository.save({ ...file, article: article, url: element.filename });
@@ -99,20 +95,19 @@ export class ArticleController {
                 }
             }
             return { success: "article updated" }
-        } catch(err){
+        } catch (err) {
             return { error: err.message }
         }
     }
-    
+
     @Delete('/article/:id')
-    @UseBefore(AuthMiddelware)
     async deleteArticle(@Param('id') id: string) {
         try {
-            const article: Article = await this.articleRepository.findOne({ where: {id: id} })
+            const article: Article = await this.articleRepository.findOne({ where: { id: id } })
             if (!article) throw new Error('Article not found');
             const file: File = await this.fileRepository.find({
                 relations: ["article"],
-                where: { article: { id: article.getId()} }
+                where: { article: { id: article.getId() } }
             })
             if (!file) throw new Error('File not found');
 

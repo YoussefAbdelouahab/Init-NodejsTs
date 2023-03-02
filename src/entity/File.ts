@@ -29,7 +29,7 @@ export class File {
     private updated_at: Date;
 
     @ManyToOne(type => Article) // Init many to one relation with Article
-    @JoinColumn() 
+    @JoinColumn()
     private article: Article; // Join article table with File table
 
     constructor(url: string, created_at: Date, updated_at: Date) {
