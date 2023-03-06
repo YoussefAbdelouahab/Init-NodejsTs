@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, UpdateDateColumn, CreateDateColumn, ArrayContainedBy } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, ManyToMany, JoinTable, UpdateDateColumn, CreateDateColumn, ArrayContainedBy, OneToMany } from "typeorm"
 import { User } from './User';
 import { FavoriteList } from './FavoriteList';
 import { Category } from './Category';
+import { File } from "./File";
 
 
 @Entity()
@@ -34,6 +35,9 @@ export class Article {
     @ManyToOne(type => User) // Init many to one relation with User
     @JoinColumn() 
     private user: User; // Join user table with Article table
+
+    @OneToMany(() => File, (file) => file.article)
+    file: File[]
 
     @ManyToMany(() => FavoriteList) // Init many to many relation with FavoriteList
     @JoinTable({
@@ -104,5 +108,11 @@ export class Article {
     }
     public setCategory(category: Category[]) {
         this.category = category;
+    }
+    public getFile(): File[] {
+        return this.file
+    }
+    public setFile(file: File[]) {
+        this.file = file;
     }
 }

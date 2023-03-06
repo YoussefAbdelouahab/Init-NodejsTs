@@ -30,8 +30,8 @@ export class File {
 
     @ManyToOne(type => Article) // Init many to one relation with Article
     @JoinColumn()
-    private article: Article; // Join article table with File table
-
+    article: Article; // Join article table with File table
+    
     constructor(url: string, created_at: Date, updated_at: Date) {
         this.url = url;
     }

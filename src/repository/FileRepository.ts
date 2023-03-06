@@ -2,6 +2,7 @@ import { File } from '../entity/File';
 import { Article } from '../entity/Article';
 import { AppDataSource } from '../db/data-source';
 import { createQueryBuilder } from 'typeorm';
+import { ALL, FILE } from 'dns';
 
 export async function deleteFile(id){
     await AppDataSource
@@ -13,14 +14,13 @@ export async function deleteFile(id){
 }
 //SELECT * FROM article LEFT JOIN file on article.id = file.articleId;
 export async function getUserArticle(id){
-    const article = await AppDataSource
+    //.leftJoin("file.article", 'article', "file.articleId = article.id")
+     const articles = await AppDataSource
     .createQueryBuilder()
-    .select("*")
+    .select()
     .from(Article, "article")
-    .where("article.userId = :id", {id: id})
-    .innerJoin(File, "file")
-    .where("articleId = :id", {id: "article.id"})
-    .getMany()
-
-    console.log(article);
+    .where("userId = :id", { id: id })
+    .leftJoin("article.file", 'file', "article.id = file.articleId")
+    .execute()
+    console.log(articles);
 }
