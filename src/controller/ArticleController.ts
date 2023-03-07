@@ -67,8 +67,7 @@ export class ArticleController {
         try {
             const user: User = await this.userRepository.findOne({ where: { id: id } });
             if (user == null) throw new Error('User required');
-            getUserArticle(user.getId());
-            return { success : "ok"}
+            return {articles : await getUserArticle(user.getId())}
         } catch (err) {
             return { error: err.message }
         }
