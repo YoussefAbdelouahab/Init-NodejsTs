@@ -1,5 +1,5 @@
 import { JsonController, Body, Post, UploadedFile, Get, Param, Req, UseBefore, Put, UploadedFiles, Delete } from 'routing-controllers';
-import { deleteFile, getUserArticle } from '../repository/FileRepository'
+import { deleteFile, getUserArticle, getAllArticle } from '../repository/FileRepository'
 import { AppDataSource } from '../db/data-source';
 import { Article } from '../entity/Article';
 import { File } from '../entity/File';
@@ -14,6 +14,17 @@ export class ArticleController {
         this.articleRepository = AppDataSource.getRepository(Article);
         this.fileRepository = AppDataSource.getRepository(File);
         this.userRepository = AppDataSource.getRepository(User);
+    }
+
+    @Get('/article')
+    async getAllArticle() {
+        try {
+            const article: Article = await this.articleRepository.find()
+            if (!article) throw new Error('Article not found');           
+            return { article: await getAllArticle() }
+        } catch (err) {
+            return { error: err.message }
+        }
     }
 
     @Post('/article')

@@ -21,3 +21,13 @@ export function getUserArticle(id){
     .execute()
     return articles;
 }
+
+export function getAllArticle(){
+    const article = AppDataSource
+   .createQueryBuilder()
+   .select()
+   .from(Article, "article")
+   .leftJoin("article.file", 'file', "article.id = file.articleId")
+   .execute()
+   return article;
+}
