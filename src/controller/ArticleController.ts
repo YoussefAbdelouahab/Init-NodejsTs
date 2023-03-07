@@ -18,9 +18,7 @@ export class ArticleController {
 
     @Get('/article')
     async getAllArticle() {
-        try {
-            const article: Article = await this.articleRepository.find()
-            if (!article) throw new Error('Article not found');           
+        try {       
             return { article: await getAllArticle() }
         } catch (err) {
             return { error: err.message }
@@ -62,11 +60,13 @@ export class ArticleController {
         try {
             const article: Article = await this.articleRepository.findOne({ where: { id: id } })
             if (!article) throw new Error('Article not found');
+
             const file: File = await this.fileRepository.find({
                 relations: ["article"],
                 where: { article: { id: article.getId() } }
             })
             if (!file) throw new Error('File not found');
+
             return { article: article, file }
         } catch (err) {
             return { error: err.message }
@@ -78,6 +78,7 @@ export class ArticleController {
         try {
             const user: User = await this.userRepository.findOne({ where: { id: id } });
             if (user == null) throw new Error('User required');
+
             return {articles : await getUserArticle(user.getId())}
         } catch (err) {
             return { error: err.message }
@@ -89,6 +90,7 @@ export class ArticleController {
         try {
             const article: Article = await this.articleRepository.findOne({ where: { id: id } })
             if (!article) throw new Error('Article not found');
+
             const file: File = await this.fileRepository.find({
                 relations: ["article"],
                 where: { article: { id: article.getId() } }
@@ -129,6 +131,7 @@ export class ArticleController {
         try {
             const article: Article = await this.articleRepository.findOne({ where: { id: id } })
             if (!article) throw new Error('Article not found');
+
             const file: File = await this.fileRepository.find({
                 relations: ["article"],
                 where: { article: { id: article.getId() } }
@@ -147,6 +150,7 @@ export class ArticleController {
                 });
             });
             await this.articleRepository.remove(article);
+            
             return { success: "Article deleted" };
         } catch (err) {
             return { error: err.message }
