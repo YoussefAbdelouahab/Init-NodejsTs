@@ -15,7 +15,7 @@ export class ArticleController {
         this.fileRepository = AppDataSource.getRepository(File);
         this.userRepository = AppDataSource.getRepository(User);
     }
-    
+
     @Post('/article')
     async CreateArticle(@Body() data: Article, @Body() fileData: File, @UploadedFiles("url", { options: multerConfig }) storedFile: Array<any>, @Req() req: any) {
         try {
@@ -71,9 +71,9 @@ export class ArticleController {
     async getUserArticle(@Param('id') id: string) {
         try {
             const user: User = await this.userRepository.findOne({ where: { id: id } });
-            if (user == null) throw new Error('User required');
+            if (user == null) throw new Error('User not found');
 
-            return {articles : await getUserArticle(user.getId()), user}
+            return {articles : await getUserArticle(user.getId())}
         } catch (err) {
             return { error: err.message }
         }
