@@ -67,7 +67,10 @@ export class ArticleController {
             })
             if (!file) throw new Error('File not found');
 
-            return { article: article, file }
+            const user: User = await this.userRepository.findOne({ where: { id: article.getUser() } })
+            if (!user) throw new Error('User not found');
+
+            return { article: article, file, user }
         } catch (err) {
             return { error: err.message }
         }
@@ -79,7 +82,7 @@ export class ArticleController {
             const user: User = await this.userRepository.findOne({ where: { id: id } });
             if (user == null) throw new Error('User required');
 
-            return {articles : await getUserArticle(user.getId())}
+            return {articles : await getUserArticle(user.getId()), user}
         } catch (err) {
             return { error: err.message }
         }
