@@ -5,6 +5,7 @@ import * as express from 'express';
 import * as logger from 'morgan';
 import * as path from 'path';
 import * as cors from 'cors';
+import { AppDataSource } from './db/data-source';
 
 const PORT: number = 8000;
 
@@ -18,13 +19,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({ secret: "secret", saveUninitialized: false, resave: false }));
 
+try {
+    const connected = AppDataSource.initialize();
+    if (connected) console.log("Database connected");
+} catch (error) {
+    console.log(error);
+}
+
 const controllerPath = path.resolve('src', 'controller', '*.ts');
 const adminControllerPath = path.resolve('src', 'controller', 'admin', '*.ts');
 
 useExpressServer(app, {
     defaultErrorHandler: true,
     routePrefix: '/api',
-    controllers: [controllerPath, adminControllerPath],
+    controllers: [controllerPath],
 });
 
 app.listen(PORT, () => {
