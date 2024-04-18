@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { JsonController, Param, Body, Get, Post, Put, Delete, Req, UseBefore, Patch } from 'routing-controllers';
 import { AppDataSource } from '../db/data-source';
 import { User } from '../entity/User';

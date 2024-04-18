@@ -5,9 +5,9 @@ export const AppDataSource = new DataSource({
     type: "mysql",
     host: "localhost",
     port: 3306,
-    username: "user",
-    password: "paris",
-    database: "gwad",
+    username: "root",
+    password: "",
+    database: "rounded",
     synchronize: true,
     logging: false,
     entities: [
@@ -18,11 +18,3 @@ export const AppDataSource = new DataSource({
     ],
     subscribers: [],
 });
-
-
-try {
-    const connected = AppDataSource.initialize();
-    if (connected) console.log("Database connected");
-} catch (error) {
-    console.log(error);
-}

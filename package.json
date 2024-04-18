@@ -36,8 +36,8 @@
       "morgan": "^1.10.0",
       "mysql2": "^2.3.3",
       "path": "^0.12.7",
-      "reflect-metadata": "^0.1.13",
-      "routing-controllers": "^0.10.0",
+      "reflect-metadata": "^0.1.14",
+      "routing-controllers": "^0.10.4",
       "short-uuid": "^4.2.2",
       "ts-node": "^10.9.1",
       "typeorm": "0.3.11"
